@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Zepbound Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f7f4fc;
+    --surface: #ffffff;
+    --surface2: #f0ebfa;
+    --border: #e2d9f3;
+    --border2: #cfc1eb;
+    --purple: #7c4dff;
+    --purple-light: #ede7ff;
+    --purple-mid: #b39ddb;
+    --text: #2d1f5e;
+    --text2: #6b5b9a;
+    --text3: #9e8ec4;
+    --green: #43a047;
+    --green-light: #e8f5e9;
+    --yellow: #f9a825;
+    --yellow-light: #fffde7;
+    --red: #e53935;
+    --red-light: #ffebee;
+    --blue: #1e88e5;
+    --blue-light: #e3f2fd;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(124,77,255,0.08);
+    --shadow-lg: 0 4px 24px rgba(124,77,255,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono { font-family: 'DM Mono', monospace; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #ede7ff 0%, #f7f4fc 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+  }
+
+  .header-inner { max-width: 540px; margin: 0 auto; }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--purple);
+    background: var(--purple-light);
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 5px;
+    display: inline-block;
+  }
+
+  .header-title { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.5px; }
+
+  .header-sub {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 3px;
+  }
+
+  .header-date { font-size: 12px; color: var(--text3); }
+
+  .sync-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    transition: all 0.3s;
+  }
+  .sync-saved { background: var(--green-light); color: var(--green); }
+  .sync-saving { background: var(--yellow-light); color: var(--yellow); }
+  .sync-error { background: var(--red-light); color: var(--red); }
+
+  .protein-display { text-align: right; }
+  .protein-big {
+    font-family: 'DM Mono', monospace;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1;
+    transition: color 0.4s;
+  }
+  .protein-label { font-size: 10px; color: var(--text3); letter-spacing: 1px; margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+  /* Progress bars */
+  .progress-bars { display: flex; flex-direction: column; gap: 8px; }
+  .progress-row { }
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .progress-label-left { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+  .progress-label-right { font-family: 'DM Mono', monospace; font-size: 10px; }
+  .progress-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+  /* Tabs */
+  .tabs {
+    max-width: 540px;
+    margin: 0 auto;
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    margin-top: 4px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 11px 0;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: -1px;
+  }
+  .tab-btn.active {
+    color: var(--purple);
+    border-bottom-color: var(--purple);
+  }
+
+  /* Main content */
+  .main { max-width: 540px; margin: 0 auto; padding: 16px 16px 100px; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+  }
+
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--purple);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* Input area */
+  .input-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--purple);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .input-wrap { position: relative; margin-bottom: 6px; }
+
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    padding-bottom: 40px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+  }
+  textarea:focus { border-color: var(--purple-mid); }
+  textarea::placeholder { color: var(--text3); }
+
+  .log-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: var(--purple);
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    color: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(124,77,255,0.3);
+  }
+  .log-btn:hover { background: #6c3de0; }
+  .log-btn:disabled { background: var(--border2); color: var(--text3); box-shadow: none; cursor: not-allowed; }
+
+  .input-hint { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text3);
+  }
+  .empty-icon { font-size: 36px; margin-bottom: 12px; }
+  .empty-text { font-size: 14px; color: var(--text2); margin-bottom: 6px; }
+  .empty-sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+
+  /* Meal cards */
+  .meal-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .meal-card.unrecognized { border-color: #ffe0b2; background: #fffbf5; }
+
+  .meal-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; align-items: center; }
+  .meal-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--purple);
+    background: var(--purple-light);
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+  .meal-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); }
+  .meal-edit-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #e65100;
+    background: #fff3e0;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+
+  .meal-desc { font-size: 14px; color: var(--text); line-height: 1.45; margin-bottom: 8px; padding-right: 24px; }
+
+  .meal-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+  .meal-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+    background: var(--surface2);
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .meal-values { display: flex; gap: 14px; align-items: center; }
+  .val-group { display: flex; align-items: center; gap: 5px; }
+  .val-input {
+    width: 56px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .val-input:focus { border-color: var(--purple-mid); }
+  .val-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); }
+
+  .meal-note {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text2);
+    font-style: italic;
+    line-height: 1.5;
+    border-left: 2px solid var(--border2);
+    padding-left: 10px;
+  }
+
+  .delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .delete-btn:hover { color: var(--red); background: var(--red-light); }
+
+  /* Totals bar */
+  .totals-bar {
+    background: var(--purple-light);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .total-item { text-align: center; }
+  .total-val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 500; }
+  .total-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 1px; margin-top: 2px; }
+
+  /* Water tab */
+  .water-center { text-align: center; margin-bottom: 22px; }
+  .water-big { font-family: 'DM Mono', monospace; font-size: 52px; font-weight: 500; line-height: 1; transition: color 0.4s; }
+  .water-sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: 2px; margin-top: 4px; }
+  .water-remaining { font-size: 13px; color: var(--text2); margin-top: 6px; }
+
+  .water-bottle {
+    width: 72px; height: 140px;
+    margin: 0 auto 22px;
+    background: var(--surface2);
+    border: 2px solid var(--border2);
+    border-radius: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .water-fill {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    transition: height 0.5s ease;
+    border-radius: 0 0 36px 36px;
+  }
+  .water-pct {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--text); z-index: 1;
+  }
+
+  .quick-add-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text3);
+    letter-spacing: 2px; text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .water-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+  .water-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: var(--shadow);
+  }
+  .water-btn:hover { background: var(--purple-light); border-color: var(--border2); }
+  .water-btn-oz { font-family: 'DM Mono', monospace; font-size: 17px; font-weight: 500; }
+  .water-btn-label { font-size: 11px; color: var(--text); margin-top: 2px; }
+  .water-btn-desc { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); }
+
+  .reset-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 16px;
+  }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .hydration-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .hydration-notes { font-size: 13px; color: var(--text2); line-height: 1.8; }
+
+  /* Summary tab */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-val { font-family: 'DM Mono', monospace; font-size: 26px; font-weight: 500; line-height: 1; }
+  .stat-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 1px; margin-top: 4px; }
+
+  .protein-breakdown { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 14px; box-shadow: var(--shadow); }
+  .breakdown-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .breakdown-time { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); width: 52px; flex-shrink: 0; }
+  .breakdown-track { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .breakdown-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .breakdown-val { font-family: 'DM Mono', monospace; font-size: 12px; width: 34px; text-align: right; flex-shrink: 0; }
+  .breakdown-total { border-top: 1px solid var(--border); margin-top: 7px; padding-top: 7px; display: flex; justify-content: space-between; }
+  .breakdown-total-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); }
+  .breakdown-total-val { font-family: 'DM Mono', monospace; font-size: 12px; }
+
+  .day-notes-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--purple); text-transform: uppercase; margin-bottom: 7px; display: block; }
+
+  .feedback-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--purple-light), #ddd6fe);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 14px;
+    color: var(--purple);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .feedback-btn:hover { background: linear-gradient(135deg, #ddd6fe, #c4b5fd); }
+  .feedback-btn:disabled { background: var(--surface2); color: var(--text3); cursor: not-allowed; box-shadow: none; }
+
+  .feedback-card { margin-top: 12px; background: var(--purple-light); border: 1px solid var(--border2); border-radius: var(--radius); padding: 14px; }
+  .feedback-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--purple); margin-bottom: 8px; }
+  .feedback-text { font-size: 13px; color: var(--text); line-height: 1.7; font-style: italic; }
+
+  .danger-btn {
+    margin-top: 14px;
+    width: 100%;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .danger-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* History tab */
+  .history-day {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow);
+  }
+  .history-day.today { border-color: var(--purple-mid); background: var(--purple-light); }
+  .history-day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .history-day-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text2); }
+  .history-day-date.today-label { color: var(--purple); }
+  .today-chip { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--purple); background: white; padding: 1px 6px; border-radius: 8px; margin-left: 6px; border: 1px solid var(--border2); }
+  .history-stats { display: flex; gap: 14px; }
+  .hstat { text-align: right; }
+  .hstat-val { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; }
+  .hstat-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); }
+  .history-bar { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .history-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .history-note { margin-top: 7px; font-size: 11px; color: var(--text3); font-style: italic; }
+
+  /* Error banner */
+  .error-banner {
+    background: var(--red-light);
+    border-bottom: 1px solid #ffcdd2;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .error-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--red); }
+  .error-close { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; }
+
+  /* Loading */
+  .loading {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: var(--bg);
+  }
+  .loading-spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--purple);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text3); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+const SUPABASE_URL = 'https://yokazfpgbjotdggkyumg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_g4Sy3-7Mrq3JXk7C5WJ2WA_SI7rhub8';
+const PROTEIN_GOAL = 140;
+const WATER_GOAL = 80;
+
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+
+// Supabase helpers
+async function sbGet(date) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/zepbound_days?date=eq.${date}&select=*`, {
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+  });
+  if (!res.ok) throw new Error(`GET ${res.status}`);
+  const rows = await res.json();
+  return rows.length > 0 ? rows[0] : null;
+}
+
+async function sbUpsert(data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/zepbound_days`, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'resolution=merge-duplicates,return=minimal'
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) { const t = await res.text(); throw new Error(`UPSERT ${res.status}: ${t}`); }
+}
+
+async function sbHistory() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/zepbound_days?select=*&order=date.desc&limit=30`, {
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+  });
+  if (!res.ok) throw new Error(`HISTORY ${res.status}`);
+  return res.json();
+}
+
+// Food database
+const FOODS = [
+  { keys: ['fage 0','fage plain','fage'], p:18, c:90, label:'Fage 0% Greek yogurt (cup)', group:'yogurt' },
+  { keys: ['chobani plain','plain greek yogurt','plain nonfat greek'], p:17, c:100, label:'Plain Greek yogurt (cup)', group:'yogurt' },
+  { keys: ['chobani vanilla','vanilla yogurt cup','chobani mixed berry','chobani strawberry','chobani blueberry','flavored yogurt cup','yogurt cup'], p:13, c:140, label:'Flavored Chobani yogurt cup', group:'yogurt' },
+  { keys: ['greek yogurt'], p:17, c:100, label:'Greek yogurt (cup)', group:'yogurt' },
+  { keys: ['skyr'], p:20, c:110, label:'Skyr (cup)', group:'yogurt' },
+  { keys: ['yogurt'], p:10, c:150, label:'Yogurt', group:'yogurt' },
+  { keys: ['two scoops orgain','2 scoops orgain','two scoops protein','2 scoops protein'], p:30, c:300, label:'Orgain protein (2 scoops)', group:'protein_powder' },
+  { keys: ['orgain protein','orgain'], p:15, c:150, label:'Orgain protein (1 scoop)', group:'protein_powder' },
+  { keys: ['gold standard','on whey','whey protein powder'], p:24, c:120, label:'Whey protein (1 scoop)', group:'protein_powder' },
+  { keys: ['protein powder','scoop of protein','scoop protein'], p:20, c:130, label:'Protein powder (1 scoop)', group:'protein_powder' },
+  { keys: ['fairlife shake','core power','fairlife protein shake'], p:42, c:230, label:'Fairlife protein shake', group:'fairlife' },
+  { keys: ['fairlife milk'], p:13, c:80, label:'Fairlife milk (cup)', group:'fairlife' },
+  { keys: ['fairlife'], p:13, c:80, label:'Fairlife (cup)', group:'fairlife' },
+  { keys: ['premier protein'], p:30, c:160, label:'Premier Protein shake', group:'pshake' },
+  { keys: ['boost','atkins shake','owyn','quest shake','slate shake','p2x'], p:20, c:160, label:'Protein shake', group:'pshake' },
+  { keys: ['starbucks double shot mocha','double shot mocha'], p:9, c:135, label:'Starbucks Double Shot Mocha', group:'energy' },
+  { keys: ['starbucks double shot','double shot energy'], p:9, c:135, label:'Starbucks Double Shot Energy', group:'energy' },
+  { keys: ['hard boiled egg','hard-boiled egg','hardboiled egg'], p:6, c:78, label:'Hard boiled egg', group:null },
+  { keys: ['egg white','egg whites'], p:13, c:50, label:'Egg whites', group:'eggs' },
+  { keys: ['scrambled eggs','fried egg'], p:12, c:150, label:'Eggs (2)', group:'eggs' },
+  { keys: ['egg'], p:6, c:78, label:'Egg', group:'eggs' },
+  { keys: ['12 count nuggets','12-count nuggets','12 piece nuggets','grilled nuggets','chick-fil-a nuggets','chick fil a nuggets'], p:38, c:140, label:'Chick-fil-A grilled nuggets 12ct', group:'chicken' },
+  { keys: ['8 count nuggets','8 piece nuggets'], p:25, c:95, label:'Chick-fil-A grilled nuggets 8ct', group:'chicken' },
+  { keys: ['chicken breast','grilled chicken breast'], p:35, c:165, label:'Chicken breast (5oz)', group:'chicken' },
+  { keys: ['rotisserie chicken','shredded chicken'], p:30, c:170, label:'Rotisserie chicken (4oz)', group:'chicken' },
+  { keys: ['chicken thigh'], p:26, c:210, label:'Chicken thigh (4oz)', group:'chicken' },
+  { keys: ['chicken satay','satay'], p:24, c:180, label:'Chicken satay (3 skewers)', group:'chicken' },
+  { keys: ['volcano chicken'], p:38, c:320, label:'Volcano chicken', group:'chicken' },
+  { keys: ['chicken teriyaki'], p:35, c:280, label:'Chicken teriyaki', group:'chicken' },
+  { keys: ['chicken'], p:30, c:165, label:'Chicken (4oz)', group:'chicken' },
+  { keys: ['canned tuna','tuna can','can of tuna'], p:22, c:100, label:'Canned tuna (1 can)', group:'fish' },
+  { keys: ['tuna'], p:22, c:100, label:'Tuna', group:'fish' },
+  { keys: ['salmon'], p:30, c:200, label:'Salmon (5oz)', group:'fish' },
+  { keys: ['shrimp'], p:20, c:90, label:'Shrimp (4oz)', group:'fish' },
+  { keys: ['tilapia','cod','white fish'], p:28, c:130, label:'White fish (5oz)', group:'fish' },
+  { keys: ['ground beef','lean beef','beef patty'], p:28, c:215, label:'Lean ground beef (4oz)', group:'beef' },
+  { keys: ['ground turkey'], p:28, c:170, label:'Ground turkey (4oz)', group:'turkey' },
+  { keys: ['deli turkey','sliced turkey','turkey breast','turkey slices'], p:22, c:110, label:'Turkey breast (4oz)', group:'turkey' },
+  { keys: ['roast beef'], p:24, c:150, label:'Roast beef (4oz)', group:'beef' },
+  { keys: ['beef salad','steak salad'], p:32, c:380, label:'Beef salad', group:'beef' },
+  { keys: ['steak','sirloin'], p:28, c:220, label:'Steak (4oz)', group:'beef' },
+  { keys: ['bacon'], p:7, c:130, label:'Bacon (2 strips)', group:null },
+  { keys: ['ham'], p:18, c:130, label:'Ham (3oz)', group:null },
+  { keys: ['pork tenderloin','pork'], p:26, c:185, label:'Pork (4oz)', group:null },
+  { keys: ['jack links teriyaki','teriyaki bites','teriyaki jerky'], p:10, c:80, label:'Jack Links teriyaki (1oz)', group:'jerky' },
+  { keys: ['jack links','beef jerky','jerky'], p:11, c:80, label:'Beef jerky (1oz)', group:'jerky' },
+  { keys: ['beef stick','slim jim','meat stick'], p:6, c:110, label:'Beef stick', group:'jerky' },
+  { keys: ['pistachios','pistachio'], p:4, c:112, label:'Pistachios (0.7oz)', group:'nuts' },
+  { keys: ['cashews','cashew'], p:5, c:157, label:'Cashews (1oz)', group:'nuts' },
+  { keys: ['almonds','almond'], p:6, c:164, label:'Almonds (1oz)', group:'nuts' },
+  { keys: ['peanut butter'], p:7, c:190, label:'Peanut butter (2 tbsp)', group:'nuts' },
+  { keys: ['cottage cheese'], p:14, c:110, label:'Cottage cheese (½ cup)', group:'cottage' },
+  { keys: ['string cheese'], p:7, c:80, label:'String cheese', group:null },
+  { keys: ['cheese curd','cheese curds'], p:7, c:110, label:'Cheese curds', group:null },
+  { keys: ['cheese'], p:7, c:110, label:'Cheese (1oz)', group:null },
+  { keys: ['chia seeds','chia'], p:5, c:138, label:'Chia seeds (2 tbsp)', group:null },
+  { keys: ['ginger chew','ginger chews'], p:0, c:20, label:'Ginger chews', group:null },
+  { keys: ['liquid iv','liquid i.v'], p:0, c:45, label:'Liquid IV', group:null },
+  { keys: ['cobb salad'], p:45, c:520, label:'Cobb salad with grilled chicken', group:'meal_salad' },
+  { keys: ['mediterranean chicken salad','mediterranean salad'], p:38, c:380, label:'Mediterranean chicken salad', group:'meal_salad' },
+  { keys: ['phoenix salad'], p:38, c:400, label:'Phoenix salad', group:'meal_salad' },
+  { keys: ['caesar salad'], p:30, c:470, label:'Caesar salad with chicken', group:'meal_salad' },
+  { keys: ['parfait no granola','parfait without granola'], p:15, c:170, label:'Yogurt parfait (no granola)', group:'parfait' },
+  { keys: ['yogurt parfait','parfait'], p:14, c:230, label:'Yogurt parfait', group:'parfait' },
+  { keys: ['half slice quiche','half quiche','half a quiche'], p:9, c:170, label:'Half slice quiche', group:'quiche' },
+  { keys: ['quiche slice','slice of quiche','quiche'], p:18, c:340, label:'Quiche slice', group:'quiche' },
+  { keys: ['pad thai'], p:22, c:430, label:'Pad Thai with chicken', group:'thai' },
+  { keys: ['green curry','red curry','panang curry','yellow curry','thai curry'], p:28, c:380, label:'Thai curry with chicken', group:'thai' },
+  { keys: ['fried rice'], p:18, c:420, label:'Fried rice with chicken', group:'thai' },
+  { keys: ['drunken noodle'], p:20, c:410, label:'Drunken noodle', group:'thai' },
+  { keys: ['pad see ew'], p:22, c:400, label:'Pad See Ew', group:'thai' },
+  { keys: ['tom yum','tom kha'], p:15, c:180, label:'Thai soup', group:'soup' },
+  { keys: ['banana'], p:1, c:105, label:'Banana', group:'fruit_banana' },
+  { keys: ['apple'], p:0, c:95, label:'Apple', group:'fruit_apple' },
+  { keys: ['raspberries','raspberry'], p:1, c:32, label:'Raspberries (½ cup)', group:'berries' },
+  { keys: ['blueberries','blueberry'], p:1, c:42, label:'Blueberries (½ cup)', group:'berries' },
+  { keys: ['strawberries','strawberry'], p:1, c:25, label:'Strawberries (½ cup)', group:'berries' },
+  { keys: ['mixed berries','berries'], p:1, c:35, label:'Mixed berries (½ cup)', group:'berries' },
+  { keys: ['oatmeal','oats','overnight oats'], p:6, c:160, label:'Oatmeal (½ cup dry)', group:'grains' },
+  { keys: ['granola'], p:4, c:200, label:'Granola (¼ cup)', group:'granola' },
+  { keys: ['brown rice'], p:4, c:216, label:'Brown rice (½ cup cooked)', group:'rice' },
+  { keys: ['rice'], p:4, c:200, label:'Rice (½ cup cooked)', group:'rice' },
+  { keys: ['quinoa'], p:8, c:222, label:'Quinoa (½ cup cooked)', group:'rice' },
+  { keys: ['edamame'], p:17, c:188, label:'Edamame (cup)', group:null },
+  { keys: ['black beans','chickpeas','beans'], p:8, c:130, label:'Beans (½ cup)', group:null },
+  { keys: ['side salad','green salad','mixed greens'], p:2, c:20, label:'Side salad', group:'salad' },
+  { keys: ['bell pepper','peppers'], p:1, c:25, label:'Bell peppers', group:null },
+  { keys: ['broccoli','steamed vegetables','mixed vegetables','vegetables','veggies'], p:3, c:50, label:'Vegetables (cup)', group:'veg' },
+  { keys: ['crackers','cracker'], p:2, c:70, label:'Crackers (serving)', group:'crackers' },
+  { keys: ['oat milk'], p:3, c:120, label:'Oat milk (cup)', group:'milk' },
+  { keys: ['almond milk'], p:1, c:30, label:'Almond milk (cup)', group:'milk' },
+  { keys: ['milk'], p:8, c:150, label:'Milk (cup)', group:'milk' },
+  { keys: ['coffee','black coffee'], p:0, c:5, label:'Coffee', group:'coffee' },
+];
+
+function estimateMeal(text) {
+  const lower = text.toLowerCase();
+  const matched = [];
+  const usedGroups = new Set();
+  const usedLabels = new Set();
+  const sorted = [...FOODS].sort((a,b) => Math.max(...b.keys.map(k=>k.length)) - Math.max(...a.keys.map(k=>k.length)));
+  for (const food of sorted) {
+    for (const key of food.keys) {
+      if (!lower.includes(key)) continue;
+      if (usedLabels.has(food.label)) continue;
+      if (food.group && usedGroups.has(food.group)) continue;
+      matched.push(food);
+      usedLabels.add(food.label);
+      if (food.group) usedGroups.add(food.group);
+      break;
+    }
+  }
+  let tp = 0, tc = 0;
+  for (const food of matched) {
+    let mult = 1;
+    const idx = lower.indexOf(food.keys[0]);
+    const ctx = lower.slice(Math.max(0,idx-25), idx+25);
+    if (/\btwo\b|2x/.test(ctx)) mult = 2;
+    else if (/\bhalf\b|½/.test(ctx)) mult = 0.5;
+    else if (/\bthree\b|3x/.test(ctx)) mult = 3;
+    tp += Math.round(food.p * mult);
+    tc += Math.round(food.c * mult);
+  }
+  let note = matched.length === 0 ? 'Food not in database — tap the protein number to edit manually.'
+    : tp >= 40 ? `${tp}g protein is a strong meal — exactly the Zepbound approach.`
+    : tp >= 25 ? `${tp}g protein is solid. Protein-first is working.`
+    : tp >= 15 ? `${tp}g here — aim to make up the gap at your next meal.`
+    : 'Light protein here. Prioritize protein at your next meal or add a snack.';
+  return { protein: tp, calories: tc, items: matched.length > 0 ? matched.map(f=>f.label) : [text], notes: note, recognized: matched.length > 0 };
+}
+
+// Color helpers
+function proteinColor(pct) { return pct >= 80 ? '#43a047' : pct >= 50 ? '#f9a825' : '#e53935'; }
+function waterColor(pct) { return pct >= 80 ? '#1e88e5' : pct >= 50 ? '#42a5f5' : '#e53935'; }
+
+// App state
+const state = {
+  meals: [], waterOz: 0, dayNote: '', activeTab: 'log',
+  history: [], loading: true, saveStatus: null, dbError: null,
+  feedback: null, feedbackLoading: false, input: '',
+  saveTimer: null, isFirstLoad: true
+};
+
+function setState(updates) {
+  Object.assign(state, updates);
+  render();
+}
+
+// Save debounce
+function scheduleSave() {
+  if (state.isFirstLoad) return;
+  if (state.saveTimer) clearTimeout(state.saveTimer);
+  state.saveTimer = setTimeout(doSave, 1000);
+}
+
+async function doSave() {
+  setState({ saveStatus: 'saving' });
+  try {
+    const tp = state.meals.reduce((s,m) => s+m.protein, 0);
+    const tc = state.meals.reduce((s,m) => s+m.calories, 0);
+    await sbUpsert({
+      date: todayISO(),
+      meals: state.meals,
+      water_oz: state.waterOz,
+      day_note: state.dayNote,
+      total_protein: tp,
+      total_calories: tc,
+      updated_at: new Date().toISOString()
+    });
+    const hist = await sbHistory();
+    setState({ saveStatus: 'saved', history: hist || [] });
+    setTimeout(() => setState({ saveStatus: null }), 2000);
+  } catch(e) {
+    setState({ saveStatus: 'error', dbError: `Save failed: ${e.message}` });
+  }
+}
+
+async function init() {
+  try {
+    const [row, hist] = await Promise.all([sbGet(todayISO()), sbHistory()]);
+    if (row) {
+      state.meals = row.meals || [];
+      state.waterOz = row.water_oz || 0;
+      state.dayNote = row.day_note || '';
+    }
+    state.history = hist || [];
+  } catch(e) {
+    state.dbError = `Could not load data: ${e.message}`;
+  }
+  state.loading = false;
+  state.isFirstLoad = false;
+  render();
+}
+
+function logMeal() {
+  const txt = state.input.trim();
+  if (!txt) return;
+  const est = estimateMeal(txt);
+  state.meals = [...state.meals, {
+    id: Date.now(),
+    description: txt,
+    items: est.items,
+    protein: est.protein,
+    calories: est.calories,
+    notes: est.notes,
+    recognized: est.recognized,
+    time: new Date().toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' })
+  }];
+  state.input = '';
+  state.feedback = null;
+  scheduleSave();
+  render();
+  setTimeout(() => { const ta = document.getElementById('meal-input'); if(ta) ta.focus(); }, 50);
+}
+
+function deleteMeal(id) {
+  state.meals = state.meals.filter(m => m.id !== id);
+  state.feedback = null;
+  scheduleSave();
+  render();
+}
+
+function updateMealVal(id, field, val) {
+  state.meals = state.meals.map(m => m.id === id ? {...m, [field]: parseInt(val)||0} : m);
+  scheduleSave();
+  render();
+}
+
+function addWater(oz) {
+  state.waterOz = Math.min(state.waterOz + oz, 120);
+  scheduleSave();
+  render();
+}
+
+function generateFeedback() {
+  setState({ feedbackLoading: true });
+  setTimeout(() => {
+    const tp = state.meals.reduce((s,m)=>s+m.protein,0);
+    const tw = state.waterOz;
+    const pp = (tp/PROTEIN_GOAL)*100, wp = (tw/WATER_GOAL)*100;
+    let fb = pp>=95 ? `Outstanding — ${tp}g protein hits the goal. `
+      : pp>=75 ? `Good day at ${tp}g protein, ${PROTEIN_GOAL-tp}g short of goal. `
+      : pp>=50 ? `${tp}g protein is a start — push harder at remaining meals. `
+      : `Only ${tp}g protein — lean on Greek yogurt, cottage cheese, or a Fairlife shake. `;
+    fb += wp>=90 ? `Hydration excellent at ${tw}oz. `
+      : wp>=60 ? `Water at ${tw}oz — keep sipping toward ${WATER_GOAL}oz. `
+      : `Water low at ${tw}oz — dehydration worsens Zepbound side effects. `;
+    fb += state.meals.length>=3 ? `${state.meals.length} meals shows solid eating structure.`
+      : state.meals.length===2 ? `Only 2 meals — consider a snack if your appetite allows.`
+      : `Light logging today — make sure you're eating enough even when not hungry.`;
+    if (state.dayNote) fb += ` Note: "${state.dayNote}"`;
+    setState({ feedback: fb, feedbackLoading: false });
+  }, 400);
+}
+
+// Render
+function render() {
+  const app = document.getElementById('app');
+  if (!app) return;
+
+  if (state.loading) {
+    app.innerHTML = `<div class="loading"><div class="loading-spinner"></div><div class="loading-text">LOADING YOUR DATA...</div></div>`;
+    return;
+  }
+
+  const tp = state.meals.reduce((s,m)=>s+m.protein,0);
+  const tc = state.meals.reduce((s,m)=>s+m.calories,0);
+  const protPct = Math.min((tp/PROTEIN_GOAL)*100, 100);
+  const watPct = Math.min((state.waterOz/WATER_GOAL)*100, 100);
+  const pColor = proteinColor(protPct);
+  const wColor = waterColor(watPct);
+  const protRem = Math.max(PROTEIN_GOAL-tp, 0);
+  const watRem = Math.max(WATER_GOAL-state.waterOz, 0);
+  const today = new Date().toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric'});
+
+  let syncBadge = '';
+  if (state.saveStatus === 'saved') syncBadge = `<span class="sync-badge sync-saved">✓ SYNCED</span>`;
+  else if (state.saveStatus === 'saving') syncBadge = `<span class="sync-badge sync-saving">SAVING...</span>`;
+  else if (state.saveStatus === 'error') syncBadge = `<span class="sync-badge sync-error">⚠ ERROR</span>`;
+
+  let errorBanner = '';
+  if (state.dbError) {
+    errorBanner = `<div class="error-banner"><span class="error-text">⚠ ${state.dbError}</span><button class="error-close" onclick="clearError()">×</button></div>`;
+  }
+
+  let tabContent = '';
+
+  if (state.activeTab === 'log') {
+    let mealCards = '';
+    if (state.meals.length === 0) {
+      mealCards = `<div class="empty"><div class="empty-icon">🥗</div><div class="empty-text">No meals logged yet today.</div><div class="empty-sub">Data syncs across all your devices automatically</div></div>`;
+    } else {
+      state.meals.forEach((meal, i) => {
+        const tags = meal.recognized ? meal.items.map(it => `<span class="meal-tag">${it}</span>`).join('') : '';
+        const editBadge = !meal.recognized ? `<span class="meal-edit-badge">✏️ Edit values</span>` : '';
+        mealCards += `
+          <div class="meal-card ${meal.recognized ? '' : 'unrecognized'}">
+            <button class="delete-btn" onclick="deleteMeal(${meal.id})">×</button>
+            <div class="meal-meta">
+              <span class="meal-time">${meal.time}</span>
+              <span class="meal-num">Meal ${i+1}</span>
+              ${editBadge}
+            </div>
+            <div class="meal-desc">${meal.description}</div>
+            ${tags ? `<div class="meal-tags">${tags}</div>` : ''}
+            <div class="meal-values">
+              <div class="val-group">
+                <input class="val-input" type="number" value="${meal.protein}" style="color:${pColor}" onchange="updateMealVal(${meal.id},'protein',this.value)">
+                <span class="val-label">g protein</span>
+              </div>
+              <div class="val-group">
+                <input class="val-input" type="number" value="${meal.calories}" style="color:#6b5b9a" onchange="updateMealVal(${meal.id},'calories',this.value)">
+                <span class="val-label">cal</span>
+              </div>
+            </div>
+            ${meal.notes ? `<div class="meal-note">${meal.notes}</div>` : ''}
+          </div>`;
+      });
+      mealCards += `
+        <div class="totals-bar">
+          <div class="total-item"><div class="total-val" style="color:${pColor}">${tp}g</div><div class="total-label">PROTEIN</div></div>
+          <div class="total-item"><div class="total-val" style="color:var(--text2)">${tc}</div><div class="total-label">CALORIES</div></div>
+          <div class="total-item"><div class="total-val" style="color:${protRem>0?'var(--red)':'var(--green)'}">${protRem>0?`-${protRem}g`:'✓'}</div><div class="total-label">REMAINING</div></div>
+        </div>`;
+    }
+
+    tabContent = `
+      <div style="margin-top:18px">
+        <label class="input-label">Describe what you ate</label>
+        <div class="input-wrap">
+          <textarea id="meal-input" rows="3" placeholder="e.g. Chobani plain Greek yogurt, one scoop Orgain, raspberries and a banana" onkeydown="handleKey(event)">${state.input}</textarea>
+          <button class="log-btn" onclick="logMeal()" ${!state.input.trim() ? 'disabled' : ''}>LOG →</button>
+        </div>
+        <div class="input-hint">Enter to log · Tap numbers to edit · Syncs across all devices</div>
+      </div>
+      <div style="margin-top:16px">${mealCards}</div>`;
+  }
+
+  else if (state.activeTab === 'water') {
+    const wPctRounded = Math.round(watPct);
+    tabContent = `
+      <div style="margin-top:18px">
+        <div class="water-center">
+          <div class="water-big" style="color:${wColor}">${state.waterOz}</div>
+          <div class="water-sub">OZ OF ${WATER_GOAL} GOAL</div>
+          <div class="water-remaining">${watRem > 0 ? `${watRem}oz remaining` : '✓ Daily goal reached'}</div>
+        </div>
+        <div class="water-bottle">
+          <div class="water-fill" style="height:${watPct}%;background:linear-gradient(180deg,${wColor}66,${wColor})"></div>
+          <div class="water-pct">${wPctRounded}%</div>
+        </div>
+        <div class="quick-add-label">QUICK ADD</div>
+        <div class="water-grid">
+          ${[{l:'Sip',oz:4,d:'small'},{l:'Glass',oz:10,d:'~10oz'},{l:'Work Bottle',oz:25,d:'your 25oz'},{l:'Coffee',oz:12,d:'mug'},{l:'Pint',oz:16,d:'16oz'},{l:'32oz',oz:32,d:'large'}].map(b=>`
+            <button class="water-btn" onclick="addWater(${b.oz})">
+              <div class="water-btn-oz" style="color:${wColor}">+${b.oz}</div>
+              <div class="water-btn-label">${b.l}</div>
+              <div class="water-btn-desc">${b.d}</div>
+            </button>`).join('')}
+        </div>
+        ${state.waterOz > 0 ? `<button class="reset-btn" onclick="resetWater()">RESET WATER</button>` : ''}
+        <div class="hydration-card">
+          <div class="card-label">Hydration Notes</div>
+          <div class="hydration-notes">
+            • Sip steadily — don't gulp large amounts<br>
+            • Drink between meals, not heavily during<br>
+            • Thirst cues are muted on Zepbound<br>
+            • Work bottle ×2 + 2 home glasses ≈ 80oz
+          </div>
+        </div>
+      </div>`;
+  }
+
+  else if (state.activeTab === 'summary') {
+    const breakdown = state.meals.length > 0 ? `
+      <div class="protein-breakdown">
+        <div class="card-label">Protein by Meal</div>
+        ${state.meals.map(m => `
+          <div class="breakdown-row">
+            <div class="breakdown-time">${m.time}</div>
+            <div class="breakdown-track"><div class="breakdown-fill" style="width:${Math.min((m.protein/PROTEIN_GOAL)*100,100)}%;background:${pColor}"></div></div>
+            <div class="breakdown-val" style="color:${pColor}">${m.protein}g</div>
+          </div>`).join('')}
+        <div class="breakdown-total">
+          <span class="breakdown-total-label">TOTAL</span>
+          <span class="breakdown-total-val" style="color:${pColor}">${tp}g / ${PROTEIN_GOAL}g</span>
+        </div>
+      </div>` : '';
+
+    const feedbackSection = state.feedback ? `
+      <div class="feedback-card">
+        <div class="feedback-label">Day Feedback</div>
+        <div class="feedback-text">${state.feedback}</div>
+      </div>` : '';
+
+    tabContent = `
+      <div style="margin-top:18px">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-val" style="color:${pColor}">${tp}g</div><div class="stat-label">PROTEIN / ${PROTEIN_GOAL}g</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--text2)">${tc}</div><div class="stat-label">CALORIES TODAY</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:${wColor}">${state.waterOz}oz</div><div class="stat-label">WATER / ${WATER_GOAL}oz</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--purple)">${state.meals.length}</div><div class="stat-label">MEALS LOGGED</div></div>
+        </div>
+        ${breakdown}
+        <div style="margin-bottom:14px">
+          <label class="day-notes-label">Day Notes</label>
+          <textarea rows="3" placeholder="Side effects? Energy? Speed eating? Nausea?" style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;resize:none;outline:none;box-sizing:border-box;line-height:1.5" onchange="updateNote(this.value)">${state.dayNote}</textarea>
+        </div>
+        <button class="feedback-btn" onclick="generateFeedback()" ${state.feedbackLoading || state.meals.length===0 ? 'disabled' : ''}>
+          ${state.feedbackLoading ? 'Analyzing...' : state.meals.length===0 ? 'Log meals first' : 'Get Day Feedback →'}
+        </button>
+        ${feedbackSection}
+        ${state.meals.length > 0 ? `<button class="danger-btn" onclick="resetDay()">RESET DAY</button>` : ''}
+      </div>`;
+  }
+
+  else if (state.activeTab === 'history') {
+    let historyItems = '';
+    if (state.history.length === 0) {
+      historyItems = `<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No history yet.</div><div class="empty-sub">Days save automatically as you log</div></div>`;
+    } else {
+      state.history.forEach(day => {
+        const isToday = day.date === todayISO();
+        const pp = Math.min(((day.total_protein||0)/PROTEIN_GOAL)*100, 100);
+        const pc = proteinColor(pp);
+        const wc = waterColor(Math.min(((day.water_oz||0)/WATER_GOAL)*100,100));
+        const dateLabel = isToday ? 'Today'
+          : new Date(day.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+        historyItems += `
+          <div class="history-day ${isToday?'today':''}">
+            <div class="history-day-header">
+              <div>
+                <span class="history-day-date ${isToday?'today-label':''}">${dateLabel}</span>
+                ${isToday ? `<span class="today-chip">ACTIVE</span>` : ''}
+              </div>
+              <div class="history-stats">
+                <div class="hstat"><div class="hstat-val" style="color:${pc}">${day.total_protein||0}g</div><div class="hstat-label">PROTEIN</div></div>
+                <div class="hstat"><div class="hstat-val" style="color:var(--text2)">${day.total_calories||0}</div><div class="hstat-label">CAL</div></div>
+                <div class="hstat"><div class="hstat-val" style="color:${wc}">${day.water_oz||0}oz</div><div class="hstat-label">WATER</div></div>
+              </div>
+            </div>
+            <div class="history-bar"><div class="history-bar-fill" style="width:${pp}%;background:${pc}"></div></div>
+            ${day.day_note ? `<div class="history-note">"${day.day_note}"</div>` : ''}
+          </div>`;
+      });
+    }
+    tabContent = `<div style="margin-top:18px"><div class="card-label">Past 30 Days</div>${historyItems}</div>`;
+  }
+
+  app.innerHTML = `
+    ${errorBanner}
+    <div class="header">
+      <div class="header-inner">
+        <div class="header-top">
+          <div>
+            <div class="badge">ZEPBOUND · WEEK 1 · 2.5mg</div>
+            <div class="header-title">Daily Tracker</div>
+            <div class="header-sub">
+              <span class="header-date">${today}</span>
+              ${syncBadge}
+            </div>
+          </div>
+          <div class="protein-display">
+            <div class="protein-big" style="color:${pColor}">${tp}g</div>
+            <div class="protein-label">PROTEIN</div>
+          </div>
+        </div>
+        <div class="progress-bars">
+          <div class="progress-row">
+            <div class="progress-labels">
+              <span class="progress-label-left">Protein ${tp}/${PROTEIN_GOAL}g</span>
+              <span class="progress-label-right" style="color:${pColor}">${protRem>0?`${protRem}g to go`:'✓ Goal reached'}</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:${protPct}%;background:linear-gradient(90deg,${pColor}88,${pColor})"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-labels">
+              <span class="progress-label-left">Water ${state.waterOz}/${WATER_GOAL}oz</span>
+              <span class="progress-label-right" style="color:${wColor}">${watRem>0?`${watRem}oz to go`:'✓ Goal reached'}</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:${watPct}%;background:linear-gradient(90deg,${wColor}88,${wColor})"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tabs">
+      ${['log','water','summary','history'].map(t=>`<button class="tab-btn ${state.activeTab===t?'active':''}" onclick="setTab('${t}')">${t}</button>`).join('')}
+    </div>
+    <div class="main">${tabContent}</div>`;
+
+  // Restore textarea input value (doesn't survive innerHTML)
+  const ta = document.getElementById('meal-input');
+  if (ta) {
+    ta.value = state.input;
+    ta.addEventListener('input', e => { state.input = e.target.value; const btn = ta.closest('.input-wrap')?.querySelector('.log-btn'); if(btn) btn.disabled = !e.target.value.trim(); });
+  }
+}
+
+// Global event handlers
+window.handleKey = function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); logMeal(); }
+};
+window.setTab = function(t) { setState({ activeTab: t }); };
+window.deleteMeal = deleteMeal;
+window.updateMealVal = updateMealVal;
+window.addWater = addWater;
+window.resetWater = function() { state.waterOz = 0; scheduleSave(); render(); };
+window.updateNote = function(v) { state.dayNote = v; scheduleSave(); };
+window.generateFeedback = generateFeedback;
+window.clearError = function() { setState({ dbError: null }); };
+window.resetDay = function() {
+  if (confirm('Reset today\'s log? This cannot be undone.')) {
+    state.meals = []; state.waterOz = 0; state.feedback = null; state.dayNote = '';
+    scheduleSave(); render();
+  }
+};
+window.logMeal = logMeal;
+
+// Boot
+init();
+</script>
+</body>
+</html>
