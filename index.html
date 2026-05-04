@@ -647,7 +647,7 @@ const FOODS = [
   { keys: ['cashews','cashew'], p:5, c:157, label:'Cashews (1oz)', group:'nuts' },
   { keys: ['almonds','almond'], p:6, c:164, label:'Almonds (1oz)', group:'nuts' },
   { keys: ['peanut butter'], p:7, c:190, label:'Peanut butter (2 tbsp)', group:'nuts' },
-  { keys: ['cottage cheese'], p:14, c:110, label:'Cottage cheese (½ cup)', group:'cottage' },
+  { keys: ['cottage cheese'], p:14, c:110, label:'Cottage cheese (1/2 cup)', group:'cottage' },
   { keys: ['string cheese'], p:7, c:80, label:'String cheese', group:'cheese', blocks:['cheese'] },
   { keys: ['cheese curd','cheese curds'], p:7, c:110, label:'Cheese curds', group:'cheese', blocks:['cheese'] },
   { keys: ['cheese'], p:7, c:110, label:'Cheese (1oz)', group:'cheese' },
@@ -670,17 +670,17 @@ const FOODS = [
   { keys: ['tom yum','tom kha'], p:15, c:180, label:'Thai soup', group:'soup', blocks:['chicken'] },
   { keys: ['banana'], p:1, c:105, label:'Banana', group:'fruit_banana' },
   { keys: ['apple'], p:0, c:95, label:'Apple', group:'fruit_apple' },
-  { keys: ['raspberries','raspberry'], p:1, c:32, label:'Raspberries (½ cup)', group:'berries' },
-  { keys: ['blueberries','blueberry'], p:1, c:42, label:'Blueberries (½ cup)', group:'berries' },
-  { keys: ['strawberries','strawberry'], p:1, c:25, label:'Strawberries (½ cup)', group:'berries' },
-  { keys: ['mixed berries','berries'], p:1, c:35, label:'Mixed berries (½ cup)', group:'berries' },
-  { keys: ['oatmeal','oats','overnight oats'], p:6, c:160, label:'Oatmeal (½ cup dry)', group:'grains' },
-  { keys: ['granola'], p:4, c:200, label:'Granola (¼ cup)', group:'granola' },
-  { keys: ['brown rice'], p:4, c:216, label:'Brown rice (½ cup cooked)', group:'rice' },
-  { keys: ['rice'], p:4, c:200, label:'Rice (½ cup cooked)', group:'rice' },
-  { keys: ['quinoa'], p:8, c:222, label:'Quinoa (½ cup cooked)', group:'rice' },
+  { keys: ['raspberries','raspberry'], p:1, c:32, label:'Raspberries (1/2 cup)', group:'berries' },
+  { keys: ['blueberries','blueberry'], p:1, c:42, label:'Blueberries (1/2 cup)', group:'berries' },
+  { keys: ['strawberries','strawberry'], p:1, c:25, label:'Strawberries (1/2 cup)', group:'berries' },
+  { keys: ['mixed berries','berries'], p:1, c:35, label:'Mixed berries (1/2 cup)', group:'berries' },
+  { keys: ['oatmeal','oats','overnight oats'], p:6, c:160, label:'Oatmeal (1/2 cup dry)', group:'grains' },
+  { keys: ['granola'], p:4, c:200, label:'Granola (1/4 cup)', group:'granola' },
+  { keys: ['brown rice'], p:4, c:216, label:'Brown rice (1/2 cup cooked)', group:'rice' },
+  { keys: ['rice'], p:4, c:200, label:'Rice (1/2 cup cooked)', group:'rice' },
+  { keys: ['quinoa'], p:8, c:222, label:'Quinoa (1/2 cup cooked)', group:'rice' },
   { keys: ['edamame'], p:17, c:188, label:'Edamame (cup)', group:'edamame' },
-  { keys: ['black beans','chickpeas','beans'], p:8, c:130, label:'Beans (½ cup)', group:'beans' },
+  { keys: ['black beans','chickpeas','beans'], p:8, c:130, label:'Beans (1/2 cup)', group:'beans' },
   { keys: ['side salad','green salad','mixed greens'], p:2, c:20, label:'Side salad', group:'salad' },
   { keys: ['bell pepper','peppers'], p:1, c:25, label:'Bell peppers', group:'peppers' },
   { keys: ['broccoli','steamed vegetables','mixed vegetables','vegetables','veggies'], p:3, c:50, label:'Vegetables (cup)', group:'veg' },
@@ -717,15 +717,15 @@ function estimateMeal(text) {
     const idx = lower.indexOf(food.keys[0]);
     const ctx = lower.slice(Math.max(0,idx-25), idx+25);
     if (/\btwo\b|2x/.test(ctx)) mult = 2;
-    else if (/\bhalf\b|½/.test(ctx)) mult = 0.5;
+    else if (/\bhalf\b|1/2/.test(ctx)) mult = 0.5;
     else if (/\bthree\b|3x/.test(ctx)) mult = 3;
     tp += Math.round(food.p * mult);
     tc += Math.round(food.c * mult);
   }
-  let note = matched.length === 0 ? 'Food not in database — tap the protein number to edit manually.'
-    : tp >= 40 ? `${tp}g protein is a strong meal — exactly the Zepbound approach.`
+  let note = matched.length === 0 ? 'Food not in database - tap the protein number to edit manually.'
+    : tp >= 40 ? `${tp}g protein is a strong meal - exactly the Zepbound approach.`
     : tp >= 25 ? `${tp}g protein is solid. Protein-first is working.`
-    : tp >= 15 ? `${tp}g here — aim to make up the gap at your next meal.`
+    : tp >= 15 ? `${tp}g here - aim to make up the gap at your next meal.`
     : 'Light protein here. Prioritize protein at your next meal or add a snack.';
   return { protein: tp, calories: tc, items: matched.length > 0 ? matched.map(f=>f.label) : [text], notes: note, recognized: matched.length > 0 };
 }
@@ -839,16 +839,16 @@ function generateFeedback() {
     const tp = state.meals.reduce((s,m)=>s+m.protein,0);
     const tw = state.waterOz;
     const pp = (tp/PROTEIN_GOAL)*100, wp = (tw/WATER_GOAL)*100;
-    let fb = pp>=95 ? `Outstanding — ${tp}g protein hits the goal. `
+    let fb = pp>=95 ? `Outstanding - ${tp}g protein hits the goal. `
       : pp>=75 ? `Good day at ${tp}g protein, ${PROTEIN_GOAL-tp}g short of goal. `
-      : pp>=50 ? `${tp}g protein is a start — push harder at remaining meals. `
-      : `Only ${tp}g protein — lean on Greek yogurt, cottage cheese, or a Fairlife shake. `;
+      : pp>=50 ? `${tp}g protein is a start - push harder at remaining meals. `
+      : `Only ${tp}g protein - lean on Greek yogurt, cottage cheese, or a Fairlife shake. `;
     fb += wp>=90 ? `Hydration excellent at ${tw}oz. `
-      : wp>=60 ? `Water at ${tw}oz — keep sipping toward ${WATER_GOAL}oz. `
-      : `Water low at ${tw}oz — dehydration worsens Zepbound side effects. `;
+      : wp>=60 ? `Water at ${tw}oz - keep sipping toward ${WATER_GOAL}oz. `
+      : `Water low at ${tw}oz - dehydration worsens Zepbound side effects. `;
     fb += state.meals.length>=3 ? `${state.meals.length} meals shows solid eating structure.`
-      : state.meals.length===2 ? `Only 2 meals — consider a snack if your appetite allows.`
-      : `Light logging today — make sure you're eating enough even when not hungry.`;
+      : state.meals.length===2 ? `Only 2 meals - consider a snack if your appetite allows.`
+      : `Light logging today - make sure you're eating enough even when not hungry.`;
     if (state.dayNote) fb += ` Note: "${state.dayNote}"`;
     setState({ feedback: fb, feedbackLoading: false });
   }, 400);
@@ -875,13 +875,13 @@ function render() {
   const today = new Date().toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric'});
 
   let syncBadge = '';
-  if (state.saveStatus === 'saved') syncBadge = `<span class="sync-badge sync-saved">✓ SYNCED</span>`;
+  if (state.saveStatus === 'saved') syncBadge = `<span class="sync-badge sync-saved">OK SYNCED</span>`;
   else if (state.saveStatus === 'saving') syncBadge = `<span class="sync-badge sync-saving">SAVING...</span>`;
-  else if (state.saveStatus === 'error') syncBadge = `<span class="sync-badge sync-error">⚠ ERROR</span>`;
+  else if (state.saveStatus === 'error') syncBadge = `<span class="sync-badge sync-error">! ERROR</span>`;
 
   let errorBanner = '';
   if (state.dbError) {
-    errorBanner = `<div class="error-banner"><span class="error-text">⚠ ${state.dbError}</span><button class="error-close" onclick="clearError()">×</button></div>`;
+    errorBanner = `<div class="error-banner"><span class="error-text">! ${state.dbError}</span><button class="error-close" onclick="clearError()">x</button></div>`;
   }
 
   let tabContent = '';
@@ -893,10 +893,10 @@ function render() {
     } else {
       state.meals.forEach((meal, i) => {
         const tags = meal.recognized ? meal.items.map(it => `<span class="meal-tag">${it}</span>`).join('') : '';
-        const editBadge = !meal.recognized ? `<span class="meal-edit-badge">✏️ Edit values</span>` : '';
+        const editBadge = !meal.recognized ? `<span class="meal-edit-badge">️ Edit values</span>` : '';
         mealCards += `
           <div class="meal-card ${meal.recognized ? '' : 'unrecognized'}">
-            <button class="delete-btn" onclick="deleteMeal(${meal.id})">×</button>
+            <button class="delete-btn" onclick="deleteMeal(${meal.id})">x</button>
             <div class="meal-meta">
               <span class="meal-time">${meal.time}</span>
               <span class="meal-num">Meal ${i+1}</span>
@@ -921,7 +921,7 @@ function render() {
         <div class="totals-bar">
           <div class="total-item"><div class="total-val" style="color:${pColor}">${tp}g</div><div class="total-label">PROTEIN</div></div>
           <div class="total-item"><div class="total-val" style="color:var(--text2)">${tc}</div><div class="total-label">CALORIES</div></div>
-          <div class="total-item"><div class="total-val" style="color:${protRem>0?'var(--red)':'var(--green)'}">${protRem>0?`-${protRem}g`:'✓'}</div><div class="total-label">REMAINING</div></div>
+          <div class="total-item"><div class="total-val" style="color:${protRem>0?'var(--red)':'var(--green)'}">${protRem>0?`-${protRem}g`:'OK'}</div><div class="total-label">REMAINING</div></div>
         </div>`;
     }
 
@@ -930,9 +930,9 @@ function render() {
         <label class="input-label">Describe what you ate</label>
         <div class="input-wrap">
           <textarea id="meal-input" rows="3" placeholder="e.g. Chobani plain Greek yogurt, one scoop Orgain, raspberries and a banana" onkeydown="handleKey(event)">${state.input}</textarea>
-          <button class="log-btn" onclick="logMeal()" ${!state.input.trim() ? 'disabled' : ''}>LOG →</button>
+          <button class="log-btn" onclick="logMeal()" ${!state.input.trim() ? 'disabled' : ''}>LOG -></button>
         </div>
-        <div class="input-hint">Enter to log · Tap numbers to edit · Syncs across all devices</div>
+        <div class="input-hint">Enter to log . Tap numbers to edit . Syncs across all devices</div>
       </div>
       <div style="margin-top:16px">${mealCards}</div>`;
   }
@@ -944,7 +944,7 @@ function render() {
         <div class="water-center">
           <div class="water-big" style="color:${wColor}">${state.waterOz}</div>
           <div class="water-sub">OZ OF ${WATER_GOAL} GOAL</div>
-          <div class="water-remaining">${watRem > 0 ? `${watRem}oz remaining` : '✓ Daily goal reached'}</div>
+          <div class="water-remaining">${watRem > 0 ? `${watRem}oz remaining` : 'OK Daily goal reached'}</div>
         </div>
         <div class="water-bottle">
           <div class="water-fill" style="height:${watPct}%;background:linear-gradient(180deg,${wColor}66,${wColor})"></div>
@@ -963,10 +963,10 @@ function render() {
         <div class="hydration-card">
           <div class="card-label">Hydration Notes</div>
           <div class="hydration-notes">
-            • Sip steadily — don't gulp large amounts<br>
-            • Drink between meals, not heavily during<br>
-            • Thirst cues are muted on Zepbound<br>
-            • Work bottle ×2 + 2 home glasses ≈ 80oz
+            - Sip steadily - don't gulp large amounts<br>
+            - Drink between meals, not heavily during<br>
+            - Thirst cues are muted on Zepbound<br>
+            - Work bottle x2 + 2 home glasses ~ 80oz
           </div>
         </div>
       </div>`;
@@ -1008,7 +1008,7 @@ function render() {
           <textarea rows="3" placeholder="Side effects? Energy? Speed eating? Nausea?" style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;resize:none;outline:none;box-sizing:border-box;line-height:1.5" onchange="updateNote(this.value)">${state.dayNote}</textarea>
         </div>
         <button class="feedback-btn" onclick="generateFeedback()" ${state.feedbackLoading || state.meals.length===0 ? 'disabled' : ''}>
-          ${state.feedbackLoading ? 'Analyzing...' : state.meals.length===0 ? 'Log meals first' : 'Get Day Feedback →'}
+          ${state.feedbackLoading ? 'Analyzing...' : state.meals.length===0 ? 'Log meals first' : 'Get Day Feedback ->'}
         </button>
         ${feedbackSection}
         ${state.meals.length > 0 ? '<button class="share-btn" onclick="shareToClaude()">&#8599; Share Day to Claude</button>' : ''}
@@ -1019,7 +1019,7 @@ function render() {
   else if (state.activeTab === 'history') {
     let historyItems = '';
     if (state.history.length === 0) {
-      historyItems = `<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No history yet.</div><div class="empty-sub">Days save automatically as you log</div></div>`;
+      historyItems = `<div class="empty"><div class="empty-icon"></div><div class="empty-text">No history yet.</div><div class="empty-sub">Days save automatically as you log</div></div>`;
     } else {
       state.history.forEach(day => {
         const isToday = day.date === todayISO();
@@ -1055,7 +1055,7 @@ function render() {
       <div class="header-inner">
         <div class="header-top">
           <div>
-            <div class="badge">ZEPBOUND · WEEK 1 · 2.5mg</div>
+            <div class="badge">ZEPBOUND . WEEK 1 . 2.5mg</div>
             <div class="header-title">Daily Tracker</div>
             <div class="header-sub">
               <span class="header-date">${today}</span>
@@ -1071,14 +1071,14 @@ function render() {
           <div class="progress-row">
             <div class="progress-labels">
               <span class="progress-label-left">Protein ${tp}/${PROTEIN_GOAL}g</span>
-              <span class="progress-label-right" style="color:${pColor}">${protRem>0?`${protRem}g to go`:'✓ Goal reached'}</span>
+              <span class="progress-label-right" style="color:${pColor}">${protRem>0?`${protRem}g to go`:'OK Goal reached'}</span>
             </div>
             <div class="progress-track"><div class="progress-fill" style="width:${protPct}%;background:linear-gradient(90deg,${pColor}88,${pColor})"></div></div>
           </div>
           <div class="progress-row">
             <div class="progress-labels">
               <span class="progress-label-left">Water ${state.waterOz}/${WATER_GOAL}oz</span>
-              <span class="progress-label-right" style="color:${wColor}">${watRem>0?`${watRem}oz to go`:'✓ Goal reached'}</span>
+              <span class="progress-label-right" style="color:${wColor}">${watRem>0?`${watRem}oz to go`:'OK Goal reached'}</span>
             </div>
             <div class="progress-track"><div class="progress-fill" style="width:${watPct}%;background:linear-gradient(90deg,${wColor}88,${wColor})"></div></div>
           </div>
@@ -1124,7 +1124,7 @@ window.shareToClaude = function() {
   const date = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
   const mealLines = state.meals.map((m,i) =>
-    `  Meal ${i+1} (${m.time}): ${m.description} — ${m.protein}g protein, ${m.calories} cal`
+    `  Meal ${i+1} (${m.time}): ${m.description} - ${m.protein}g protein, ${m.calories} cal`
   ).join('\n');
 
   const message = `Here is my Zepbound daily summary for ${date}:
@@ -1144,7 +1144,15 @@ Please give me feedback on today's nutrition, protein targets, and anything I sh
   window.open(`https://claude.ai/new?q=${encoded}`, '_blank');
 };
 
+// Global error handler - show errors visibly instead of blank screen
+window.onerror = function(msg, src, line, col, err) {
+  document.getElementById('app').innerHTML =
+    '<div style="padding:20px;font-family:monospace;color:#c00;background:#fff0f0;border:1px solid #fcc;border-radius:8px;margin:20px">' +
+    '<b>App Error</b><br>' + msg + '<br>Line: ' + line + '</div>';
+  return false;
+};
 
-</script>
+// Boot
+init();</script>
 </body>
 </html>
