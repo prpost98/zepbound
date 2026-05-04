@@ -1011,11 +1011,8 @@ function render() {
           ${state.feedbackLoading ? 'Analyzing...' : state.meals.length===0 ? 'Log meals first' : 'Get Day Feedback →'}
         </button>
         ${feedbackSection}
-        ${state.meals.length > 0 ? `
-        <button class="share-btn" onclick="shareToClaude()">
-          ↗ Share to Claude for Feedback
-        </button>` : ''}
-        ${state.meals.length > 0 ? `<button class="danger-btn" onclick="resetDay()">RESET DAY</button>` : ''}
+        ${state.meals.length > 0 ? '<button class="share-btn" onclick="shareToClaude()">&#8599; Share Day to Claude</button>' : ''}
+        ${state.meals.length > 0 ? '<button class="danger-btn" onclick="resetDay()">RESET DAY</button>' : ''}
       </div>`;
   }
 
