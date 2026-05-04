@@ -630,20 +630,20 @@ const FOODS = [
   { keys: ['chia seeds','chia'], p:5, c:138, label:'Chia seeds (2 tbsp)', group:null },
   { keys: ['ginger chew','ginger chews'], p:0, c:20, label:'Ginger chews', group:null },
   { keys: ['liquid iv','liquid i.v'], p:0, c:45, label:'Liquid IV', group:null },
-  { keys: ['cobb salad'], p:45, c:520, label:'Cobb salad with grilled chicken', group:'meal_salad' },
-  { keys: ['mediterranean chicken salad','mediterranean salad'], p:38, c:380, label:'Mediterranean chicken salad', group:'meal_salad' },
-  { keys: ['phoenix salad'], p:38, c:400, label:'Phoenix salad', group:'meal_salad' },
-  { keys: ['caesar salad'], p:30, c:470, label:'Caesar salad with chicken', group:'meal_salad' },
-  { keys: ['parfait no granola','parfait without granola'], p:15, c:170, label:'Yogurt parfait (no granola)', group:'parfait' },
-  { keys: ['yogurt parfait','parfait'], p:14, c:230, label:'Yogurt parfait', group:'parfait' },
-  { keys: ['half slice quiche','half quiche','half a quiche'], p:9, c:170, label:'Half slice quiche', group:'quiche' },
-  { keys: ['quiche slice','slice of quiche','quiche'], p:18, c:340, label:'Quiche slice', group:'quiche' },
-  { keys: ['pad thai'], p:22, c:430, label:'Pad Thai with chicken', group:'thai' },
-  { keys: ['green curry','red curry','panang curry','yellow curry','thai curry'], p:28, c:380, label:'Thai curry with chicken', group:'thai' },
-  { keys: ['fried rice'], p:18, c:420, label:'Fried rice with chicken', group:'thai' },
-  { keys: ['drunken noodle'], p:20, c:410, label:'Drunken noodle', group:'thai' },
-  { keys: ['pad see ew'], p:22, c:400, label:'Pad See Ew', group:'thai' },
-  { keys: ['tom yum','tom kha'], p:15, c:180, label:'Thai soup', group:'soup' },
+  { keys: ['cobb salad'], p:45, c:520, label:'Cobb salad with grilled chicken', group:'meal_salad', blocks:['chicken','eggs','salad'] },
+  { keys: ['mediterranean chicken salad','mediterranean salad'], p:38, c:380, label:'Mediterranean chicken salad', group:'meal_salad', blocks:['chicken','salad'] },
+  { keys: ['phoenix salad'], p:38, c:400, label:'Phoenix salad', group:'meal_salad', blocks:['chicken','salad'] },
+  { keys: ['caesar salad'], p:30, c:470, label:'Caesar salad with chicken', group:'meal_salad', blocks:['chicken','salad'] },
+  { keys: ['parfait no granola','parfait without granola'], p:15, c:170, label:'Yogurt parfait (no granola)', group:'parfait', blocks:['yogurt'] },
+  { keys: ['yogurt parfait','parfait'], p:14, c:230, label:'Yogurt parfait', group:'parfait', blocks:['yogurt'] },
+  { keys: ['half slice quiche','half quiche','half a quiche'], p:9, c:170, label:'Half slice quiche', group:'quiche', blocks:['eggs','cheese'] },
+  { keys: ['quiche slice','slice of quiche','quiche'], p:18, c:340, label:'Quiche slice', group:'quiche', blocks:['eggs','cheese'] },
+  { keys: ['pad thai'], p:22, c:430, label:'Pad Thai with chicken', group:'thai', blocks:['chicken'] },
+  { keys: ['green curry','red curry','panang curry','yellow curry','thai curry'], p:28, c:380, label:'Thai curry with chicken', group:'thai', blocks:['chicken'] },
+  { keys: ['fried rice'], p:18, c:420, label:'Fried rice with chicken', group:'thai', blocks:['chicken','rice'] },
+  { keys: ['drunken noodle'], p:20, c:410, label:'Drunken noodle', group:'thai', blocks:['chicken'] },
+  { keys: ['pad see ew'], p:22, c:400, label:'Pad See Ew', group:'thai', blocks:['chicken'] },
+  { keys: ['tom yum','tom kha'], p:15, c:180, label:'Thai soup', group:'soup', blocks:['chicken'] },
   { keys: ['banana'], p:1, c:105, label:'Banana', group:'fruit_banana' },
   { keys: ['apple'], p:0, c:95, label:'Apple', group:'fruit_apple' },
   { keys: ['raspberries','raspberry'], p:1, c:32, label:'Raspberries (½ cup)', group:'berries' },
@@ -672,15 +672,18 @@ function estimateMeal(text) {
   const matched = [];
   const usedGroups = new Set();
   const usedLabels = new Set();
+  const blockedGroups = new Set();
   const sorted = [...FOODS].sort((a,b) => Math.max(...b.keys.map(k=>k.length)) - Math.max(...a.keys.map(k=>k.length)));
   for (const food of sorted) {
     for (const key of food.keys) {
       if (!lower.includes(key)) continue;
       if (usedLabels.has(food.label)) continue;
       if (food.group && usedGroups.has(food.group)) continue;
+      if (food.group && blockedGroups.has(food.group)) continue;
       matched.push(food);
       usedLabels.add(food.label);
       if (food.group) usedGroups.add(food.group);
+      if (food.blocks) food.blocks.forEach(b => blockedGroups.add(b));
       break;
     }
   }
