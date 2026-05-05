@@ -470,7 +470,7 @@ function estimateMeal(text) {
   var lower = text.toLowerCase();
   var matched = [], usedGroups = {}, usedLabels = {}, blockedGroups = {};
   // Build combined food list: custom foods take priority (checked first)
-  var customAsBuiltin = (state.customFoods || []).map(function(cf) {
+  var customAsBuiltin = ((typeof state !== 'undefined' && state.customFoods) || []).map(function(cf) {
     var keywords = cf.keywords ? cf.keywords.toLowerCase().split(',').map(function(k){return k.trim();}).filter(Boolean) : [];
     // also match on the name itself
     var nameKey = cf.name.toLowerCase();
@@ -485,7 +485,14 @@ function estimateMeal(text) {
     var food = sorted[i];
     for (var j = 0; j < food.keys.length; j++) {
       var key = food.keys[j];
-      if (!key || lower.indexOf(key) === -1) continue;
+      if (!key) continue;
+      // Short keys (under 4 chars) must match as whole words to avoid false positives
+      if (key.length < 4) {
+        var wbRegex = new RegExp('\\b' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+        if (!wbRegex.test(lower)) continue;
+      } else {
+        if (lower.indexOf(key) === -1) continue;
+      }
       if (usedLabels[food.label]) continue;
       if (food.group && usedGroups[food.group]) continue;
       if (food.group && blockedGroups[food.group]) continue;
