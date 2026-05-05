@@ -374,7 +374,7 @@ var FOODS = [
   { keys: ['chobani vanilla','vanilla yogurt cup','chobani mixed berry','chobani strawberry','chobani blueberry','flavored yogurt cup','yogurt cup'], p:13, c:140, label:'Flavored Chobani yogurt cup', group:'yogurt' },
   { keys: ['greek yogurt'], p:17, c:100, label:'Greek yogurt', group:'yogurt' },
   { keys: ['skyr'], p:20, c:110, label:'Skyr', group:'yogurt' },
-  { keys: ['yogurt'], p:10, c:150, label:'Yogurt', group:'yogurt' },
+  { keys: ['yogurt'], p:10, c:150, label:'Yogurt', group:'yogurt' , generic:true },
   { keys: ['two scoops orgain','2 scoops orgain','two scoops protein','2 scoops protein'], p:30, c:300, label:'Orgain protein (2 scoops)', group:'protein_powder' },
   { keys: ['orgain protein','orgain'], p:15, c:150, label:'Orgain protein (1 scoop)', group:'protein_powder' },
   { keys: ['gold standard','on whey','whey protein powder'], p:24, c:120, label:'Whey protein (1 scoop)', group:'protein_powder' },
@@ -389,7 +389,7 @@ var FOODS = [
   { keys: ['hard boiled egg','hard-boiled egg','hardboiled egg'], p:6, c:78, label:'Hard boiled egg', group:'hard_egg' },
   { keys: ['egg white','egg whites'], p:13, c:50, label:'Egg whites', group:'eggs' },
   { keys: ['scrambled eggs','fried egg'], p:12, c:150, label:'Eggs (2)', group:'eggs' },
-  { keys: ['egg'], p:6, c:78, label:'Egg', group:'eggs' },
+  { keys: ['egg'], p:6, c:78, label:'Egg', group:'eggs' , generic:true },
   { keys: ['12 count nuggets','12-count nuggets','12 piece nuggets','grilled nuggets','chick-fil-a nuggets','chick fil a nuggets'], p:38, c:140, label:'CFA grilled nuggets 12ct', group:'chicken' },
   { keys: ['8 count nuggets','8 piece nuggets'], p:25, c:95, label:'CFA grilled nuggets 8ct', group:'chicken' },
   { keys: ['chicken breast','grilled chicken breast'], p:35, c:165, label:'Chicken breast (5oz)', group:'chicken' },
@@ -398,10 +398,10 @@ var FOODS = [
   { keys: ['chicken satay','satay'], p:24, c:180, label:'Chicken satay', group:'chicken' },
   { keys: ['volcano chicken'], p:38, c:320, label:'Volcano chicken', group:'chicken' },
   { keys: ['chicken teriyaki'], p:35, c:280, label:'Chicken teriyaki', group:'chicken' },
-  { keys: ['chicken'], p:30, c:165, label:'Chicken (4oz)', group:'chicken' },
+  { keys: ['chicken'], p:30, c:165, label:'Chicken (4oz)', group:'chicken' , generic:true },
   { keys: ['canned tuna','tuna can','can of tuna'], p:22, c:100, label:'Canned tuna', group:'fish' },
-  { keys: ['tuna'], p:22, c:100, label:'Tuna', group:'fish' },
-  { keys: ['salmon'], p:30, c:200, label:'Salmon (5oz)', group:'fish' },
+  { keys: ['tuna'], p:22, c:100, label:'Tuna', group:'fish' , generic:true },
+  { keys: ['salmon'], p:30, c:200, label:'Salmon (5oz)', group:'fish' , generic:true },
   { keys: ['shrimp'], p:20, c:90, label:'Shrimp (4oz)', group:'fish' },
   { keys: ['tilapia','cod','white fish'], p:28, c:130, label:'White fish (5oz)', group:'fish' },
   { keys: ['ground beef','lean beef','beef patty'], p:28, c:215, label:'Lean ground beef', group:'beef' },
@@ -409,11 +409,11 @@ var FOODS = [
   { keys: ['deli turkey','sliced turkey','turkey breast','turkey slices'], p:22, c:110, label:'Turkey breast', group:'turkey' },
   { keys: ['roast beef'], p:24, c:150, label:'Roast beef', group:'beef' },
   { keys: ['beef salad','steak salad'], p:32, c:380, label:'Beef salad', group:'beef' },
-  { keys: ['steak','sirloin'], p:28, c:220, label:'Steak (4oz)', group:'beef' },
+  { keys: ['steak','sirloin'], p:28, c:220, label:'Steak (4oz)', group:'beef' , generic:true },
   { keys: ['bacon'], p:7, c:130, label:'Bacon (2 strips)', group:'bacon' },
   { keys: ['ham'], p:18, c:130, label:'Ham (3oz)', group:'ham' },
   { keys: ['pork tenderloin'], p:26, c:185, label:'Pork tenderloin', group:'pork' },
-  { keys: ['pork'], p:26, c:185, label:'Pork (4oz)', group:'pork' },
+  { keys: ['pork'], p:26, c:185, label:'Pork (4oz)', group:'pork' , generic:true },
   { keys: ['jack links teriyaki','teriyaki bites','teriyaki jerky'], p:10, c:80, label:'Jack Links teriyaki', group:'jerky' },
   { keys: ['jack links','beef jerky','jerky'], p:11, c:80, label:'Beef jerky', group:'jerky' },
   { keys: ['beef stick','slim jim','meat stick'], p:6, c:110, label:'Beef stick', group:'jerky' },
@@ -424,7 +424,7 @@ var FOODS = [
   { keys: ['cottage cheese'], p:14, c:110, label:'Cottage cheese (1/2 cup)', group:'cottage' },
   { keys: ['string cheese'], p:7, c:80, label:'String cheese', group:'cheese', blocks:['cheese'] },
   { keys: ['cheese curd','cheese curds'], p:7, c:110, label:'Cheese curds', group:'cheese', blocks:['cheese'] },
-  { keys: ['cheese'], p:7, c:110, label:'Cheese (1oz)', group:'cheese' },
+  { keys: ['cheese'], p:7, c:110, label:'Cheese (1oz)', group:'cheese' , generic:true },
   { keys: ['chia seeds','chia'], p:5, c:138, label:'Chia seeds', group:'chia' },
   { keys: ['ginger chew','ginger chews'], p:0, c:20, label:'Ginger chews', group:'ginger' },
   { keys: ['liquid iv','liquid i.v'], p:0, c:45, label:'Liquid IV', group:'liquid_iv' },
@@ -450,9 +450,9 @@ var FOODS = [
   { keys: ['mixed berries','berries'], p:1, c:35, label:'Mixed berries', group:'berries' },
   { keys: ['oatmeal','oats','overnight oats'], p:6, c:160, label:'Oatmeal', group:'grains' },
   { keys: ['granola'], p:4, c:200, label:'Granola', group:'granola' },
-  { keys: ['toast','bread'], p:3, c:80, label:'Toast/bread', group:'bread' },
+  { keys: ['toast','bread'], p:3, c:80, label:'Toast/bread', group:'bread' , generic:true },
   { keys: ['brown rice'], p:4, c:216, label:'Brown rice', group:'rice' },
-  { keys: ['rice'], p:4, c:200, label:'Rice', group:'rice' },
+  { keys: ['rice'], p:4, c:200, label:'Rice', group:'rice' , generic:true },
   { keys: ['quinoa'], p:8, c:222, label:'Quinoa', group:'rice' },
   { keys: ['edamame'], p:17, c:188, label:'Edamame', group:'edamame' },
   { keys: ['black beans','chickpeas','beans'], p:8, c:130, label:'Beans', group:'beans' },
@@ -462,17 +462,24 @@ var FOODS = [
   { keys: ['crackers','cracker'], p:2, c:70, label:'Crackers', group:'crackers' },
   { keys: ['oat milk'], p:3, c:120, label:'Oat milk', group:'milk' },
   { keys: ['almond milk'], p:1, c:30, label:'Almond milk', group:'milk' },
-  { keys: ['milk'], p:8, c:150, label:'Milk', group:'milk' },
-  { keys: ['coffee','black coffee'], p:0, c:5, label:'Coffee', group:'coffee' }
+  { keys: ['milk'], p:8, c:150, label:'Milk', group:'milk' , generic:true },
+  { keys: ['coffee','black coffee'], p:0, c:5, label:'Coffee', group:'coffee' , generic:true }
 ];
+
+function keyMatches(lower, key) {
+  if (!key) return false;
+  if (key.length < 4) {
+    var wbRegex = new RegExp('\\b' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+    return wbRegex.test(lower);
+  }
+  return lower.indexOf(key) >= 0;
+}
 
 function estimateMeal(text) {
   var lower = text.toLowerCase();
   var matched = [], usedGroups = {}, usedLabels = {}, blockedGroups = {};
-  // Build combined food list: custom foods take priority (checked first)
   var customAsBuiltin = ((typeof state !== 'undefined' && state.customFoods) || []).map(function(cf) {
     var keywords = cf.keywords ? cf.keywords.toLowerCase().split(',').map(function(k){return k.trim();}).filter(Boolean) : [];
-    // also match on the name itself
     var nameKey = cf.name.toLowerCase();
     if (keywords.indexOf(nameKey) === -1) keywords.unshift(nameKey);
     return { keys: keywords, p: cf.protein_g, c: cf.calories, label: cf.name, group: 'custom_'+cf.id, custom: true };
@@ -485,14 +492,7 @@ function estimateMeal(text) {
     var food = sorted[i];
     for (var j = 0; j < food.keys.length; j++) {
       var key = food.keys[j];
-      if (!key) continue;
-      // Short keys (under 4 chars) must match as whole words to avoid false positives
-      if (key.length < 4) {
-        var wbRegex = new RegExp('\\b' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-        if (!wbRegex.test(lower)) continue;
-      } else {
-        if (lower.indexOf(key) === -1) continue;
-      }
+      if (!keyMatches(lower, key)) continue;
       if (usedLabels[food.label]) continue;
       if (food.group && usedGroups[food.group]) continue;
       if (food.group && blockedGroups[food.group]) continue;
@@ -504,20 +504,61 @@ function estimateMeal(text) {
   }
   var tp = 0, tc = 0;
   matched.forEach(function(food) {
-    var mult = 1, idx = lower.indexOf(food.keys[0]);
+    var mult = 1;
+    var matchKey = food.keys.find(function(k){ return keyMatches(lower, k); }) || food.keys[0];
+    var idx = lower.indexOf(matchKey);
     var ctx = lower.slice(Math.max(0,idx-25), idx+25);
     if (/\btwo\b|2x/.test(ctx)) mult = 2;
     else if (/\bhalf\b/.test(ctx)) mult = 0.5;
     else if (/\bthree\b|3x/.test(ctx)) mult = 3;
     tp += Math.round(food.p * mult); tc += Math.round(food.c * mult);
   });
-  var hasCustom = matched.some(function(f){ return f.custom; });
-  var note = matched.length === 0 ? 'Food not in database - add it below so it matches next time!'
+
+  // Determine if we should suggest adding foods:
+  // 1. Nothing matched at all
+  // 2. Only generic fallbacks matched but entry has 2+ words (specific item likely)
+  var allGeneric = matched.length > 0 && matched.every(function(f){ return f.generic && !f.custom; });
+  var wordCount = text.trim().split(/\s+/).length;
+  var shouldSuggestAdd = matched.length === 0 || (allGeneric && wordCount >= 2);
+
+  // Try to extract unrecognized chunks for per-item add suggestions
+  // Split on common separators, filter out connector words, dedupe matched keys
+  var matchedKeysCovered = [];
+  matched.forEach(function(f){ f.keys.forEach(function(k){ if(keyMatches(lower,k)) matchedKeysCovered.push(k.toLowerCase()); }); });
+  var STOP_WORDS = ['and','with','a','an','the','of','on','some','my','for','plus','also','then','one','two','three','half','slice','slices','cup','cups','oz','tbsp','tsp','scoop','piece','pieces','small','large','medium'];
+  // Split input into chunks by common separators
+  var rawChunks = text.split(/,|;|and|with|plus|then/i).map(function(c){ return c.trim(); }).filter(Boolean);
+  var unrecognizedChunks = [];
+  rawChunks.forEach(function(chunk) {
+    var chunkLower = chunk.toLowerCase();
+    // Skip if this chunk is fully covered by a matched key
+    var covered = matchedKeysCovered.some(function(k){ return keyMatches(chunkLower, k); });
+    // Skip if chunk is just stop words / numbers
+    var meaningful = chunk.trim().split(/\s+/).filter(function(w){ return !STOP_WORDS.includes(w.toLowerCase()) && !/^\d+$/.test(w); });
+    if (!covered && meaningful.length > 0) {
+      // Clean up the chunk - remove leading quantities/stop words
+      var cleaned = chunk.trim().replace(/^(\d+\s*)?(slice|slices|cup|cups|oz|tbsp|tsp|scoop|piece|pieces|small|large|medium|one|two|three|half)\s+/i, '').trim();
+      if (cleaned.length > 1) unrecognizedChunks.push(cleaned);
+    }
+  });
+  // Dedupe
+  unrecognizedChunks = unrecognizedChunks.filter(function(c,i,arr){ return arr.indexOf(c) === i; });
+
+  var note = matched.length === 0 ? 'No items recognized — add them below so they match next time!'
     : tp >= 40 ? tp + 'g protein is a strong meal - exactly the Zepbound approach.'
     : tp >= 25 ? tp + 'g protein is solid. Protein-first is working.'
     : tp >= 15 ? tp + 'g here - aim to make up the gap at your next meal.'
     : 'Light protein here. Prioritize protein at your next meal or add a snack.';
-  return { protein: tp, calories: tc, items: matched.length > 0 ? matched.map(function(f){return f.label;}) : [text], notes: note, recognized: matched.length > 0, hasCustom: hasCustom };
+
+  return {
+    protein: tp, calories: tc,
+    items: matched.length > 0 ? matched.map(function(f){return f.label;}) : [text],
+    notes: note,
+    recognized: matched.length > 0 && !allGeneric,
+    allGeneric: allGeneric,
+    shouldSuggestAdd: shouldSuggestAdd,
+    unrecognizedChunks: unrecognizedChunks
+  };
 }
 
 function pColor(pct) { return pct >= 80 ? '#43a047' : pct >= 50 ? '#f9a825' : '#e53935'; }
@@ -534,7 +575,7 @@ var state = {
   // weight
   weights:[], weightInput:"", weightDateInput:todayISO(), weightChartRange:"all",
   // custom foods
-  customFoods:[], addFoodMealId:null, editingFoodId:null,
+  customFoods:[], foodForms:{}, editingFoodId:null,
   cfName:"", cfKeywords:"", cfServing:"", cfProtein:"", cfCalories:"",
 };
 
@@ -585,7 +626,7 @@ async function init() {
 function logMeal() {
   var txt = state.input.trim(); if (!txt) return;
   var est = estimateMeal(txt);
-  state.meals = state.meals.concat([{ id:Date.now(), description:txt, items:est.items, protein:est.protein, calories:est.calories, notes:est.notes, recognized:est.recognized, time:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) }]);
+  state.meals = state.meals.concat([{ id:Date.now(), description:txt, items:est.items, protein:est.protein, calories:est.calories, notes:est.notes, recognized:est.recognized, allGeneric:est.allGeneric, shouldSuggestAdd:est.shouldSuggestAdd, unrecognizedChunks:est.unrecognizedChunks, time:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) }]);
   state.input = ''; state.feedback = null; scheduleSave(); render();
   setTimeout(function(){ var ta=document.getElementById('meal-input'); if(ta) ta.focus(); }, 50);
 }
@@ -762,6 +803,9 @@ function buildBadgeText() {
   return (isDoseDay ? '💉 DOSE DAY · ' : '') + 'WEEK ' + weeks + ' · ' + dose + 'mg';
 }
 
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function escJs(s) { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
+
 // ─── RENDER ───────────────────────────────────────────────────────────────────
 function render() {
   var app = document.getElementById('app'); if (!app) return;
@@ -805,19 +849,78 @@ function render() {
       }
       mealCards = mergeBar;
       state.meals.forEach(function(meal,i) {
-        var tags='';
-        if (meal.recognized) tags=meal.items.map(function(it){
+        var tags = meal.items.map(function(it){
           var isCustom = state.customFoods.some(function(cf){ return cf.name===it; });
           return '<span class="meal-tag">'+it+(isCustom?'<span class="custom-badge">MY FOOD</span>':'')+'</span>';
         }).join('');
-        var editBadge=!meal.recognized?'<span class="meal-edit-badge">Edit values</span>':'';
-        var mergedBadge=meal.merged?'<span class="meal-edit-badge" style="background:#e8f5e9;color:#2e7d32">Merged</span>':'';
+        var editBadge = !meal.recognized ? '<span class="meal-edit-badge">Edit values</span>' : '';
+        var mergedBadge = meal.merged ? '<span class="meal-edit-badge" style="background:#e8f5e9;color:#2e7d32">Merged</span>' : '';
+        var genericBadge = meal.allGeneric ? '<span class="meal-edit-badge" style="background:#fff3e0;color:#e65100">Generic match</span>' : '';
         var isSelected = state.mergeSelected.indexOf(meal.id) >= 0;
         var cbHtml = state.mergeMode ? '<div class="merge-checkbox'+(isSelected?' checked':'')+'" onclick="toggleMergeSelect('+meal.id+')"></div>' : '';
-        var cardClass = 'meal-card'+(meal.recognized?'':' unrecognized')+(state.mergeMode?' merge-mode':'')+(isSelected?' merge-selected':'');
+        var cardClass = 'meal-card'+(meal.recognized && !meal.allGeneric?'':' unrecognized')+(state.mergeMode?' merge-mode':'')+(isSelected?' merge-selected':'');
+
+        // Build add-food section: show per-chunk forms or collapsed prompt
+        var addFoodSection = '';
+        if (!state.mergeMode && meal.shouldSuggestAdd) {
+          var chunks = meal.unrecognizedChunks && meal.unrecognizedChunks.length > 0 ? meal.unrecognizedChunks : [meal.description];
+          var forms = state.foodForms[meal.id] || {};
+          var chunkHtml = chunks.map(function(chunk, ci) {
+            var formKey = meal.id + '_' + ci;
+            var form = forms[ci];
+            if (form && form.open) {
+              return '<div class="add-food-form" style="margin-top:8px">'
+                +'<div class="add-food-form-title">ADD: '+chunk.toUpperCase()+'</div>'
+                +'<div class="food-field"><label class="food-field-label">FOOD NAME</label><input type="text" value="'+escHtml(form.name||chunk)+'" oninput="setCFF('+meal.id+','+ci+',\'name\',this.value)" placeholder="'+escHtml(chunk)+'"></div>'
+                +'<div class="food-field"><label class="food-field-label">KEYWORDS (comma separated)</label><input type="text" value="'+escHtml(form.keywords||'')+'" oninput="setCFF('+meal.id+','+ci+',\'keywords\',this.value)" placeholder="e.g. farmhouse bread, butter bread"></div>'
+                +'<div class="food-field"><label class="food-field-label">SERVING SIZE</label><input type="text" value="'+escHtml(form.serving||'')+'" oninput="setCFF('+meal.id+','+ci+',\'serving\',this.value)" placeholder="e.g. 1 slice (38g)"></div>'
+                +'<div class="food-field-row">'
+                +'<div class="food-field"><label class="food-field-label">PROTEIN (g)</label><input type="number" value="'+(form.protein||'')+'" oninput="setCFF('+meal.id+','+ci+',\'protein\',this.value)" placeholder="4"></div>'
+                +'<div class="food-field"><label class="food-field-label">CALORIES</label><input type="number" value="'+(form.calories||'')+'" oninput="setCFF('+meal.id+','+ci+',\'calories\',this.value)" placeholder="110"></div>'
+                +'</div>'
+                +'<div class="food-form-actions">'
+                +'<button class="food-save-btn" onclick="saveChunkFood('+meal.id+','+ci+')">SAVE FOOD</button>'
+                +'<button class="food-cancel-btn" onclick="closeChunkForm('+meal.id+','+ci+')">CANCEL</button>'
+                +'</div></div>';
+            } else {
+              return '<div class="add-food-prompt" style="margin-top:6px">'
+                +'<span class="add-food-prompt-text">'+escHtml(chunk)+'</span>'
+                +'<button class="add-food-prompt-btn" onclick="openChunkForm('+meal.id+','+ci+',\''+escJs(chunk)+'\')">+ Add</button>'
+                +'</div>';
+            }
+          }).join('');
+          addFoodSection = '<div style="margin-top:8px">'
+            +'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;color:#e65100;margin-bottom:4px;">'+(meal.recognized?'SAVE SPECIFIC VERSION:':'NOT RECOGNIZED — ADD TO MY FOODS:')+'</div>'
+            +chunkHtml+'</div>';
+        }
+        // Always show a collapsed "+ Save a food" button on recognized meals too
+        if (!state.mergeMode && meal.recognized && !meal.shouldSuggestAdd) {
+          var forms2 = state.foodForms[meal.id] || {};
+          var anyOpen = Object.keys(forms2).some(function(k){ return forms2[k] && forms2[k].open; });
+          if (anyOpen) {
+            var chunk2 = meal.description;
+            var form2 = forms2[0] || {};
+            addFoodSection = '<div class="add-food-form" style="margin-top:8px">'
+              +'<div class="add-food-form-title">SAVE AS CUSTOM FOOD</div>'
+              +'<div class="food-field"><label class="food-field-label">FOOD NAME</label><input type="text" value="'+escHtml(form2.name||chunk2)+'" oninput="setCFF('+meal.id+',0,\'name\',this.value)"></div>'
+              +'<div class="food-field"><label class="food-field-label">KEYWORDS</label><input type="text" value="'+escHtml(form2.keywords||'')+'" oninput="setCFF('+meal.id+',0,\'keywords\',this.value)" placeholder="keywords to match this food"></div>'
+              +'<div class="food-field"><label class="food-field-label">SERVING SIZE</label><input type="text" value="'+escHtml(form2.serving||'')+'" oninput="setCFF('+meal.id+',0,\'serving\',this.value)"></div>'
+              +'<div class="food-field-row">'
+              +'<div class="food-field"><label class="food-field-label">PROTEIN (g)</label><input type="number" value="'+(form2.protein||meal.protein)+'" oninput="setCFF('+meal.id+',0,\'protein\',this.value)"></div>'
+              +'<div class="food-field"><label class="food-field-label">CALORIES</label><input type="number" value="'+(form2.calories||meal.calories)+'" oninput="setCFF('+meal.id+',0,\'calories\',this.value)"></div>'
+              +'</div>'
+              +'<div class="food-form-actions">'
+              +'<button class="food-save-btn" onclick="saveChunkFood('+meal.id+',0)">SAVE FOOD</button>'
+              +'<button class="food-cancel-btn" onclick="closeChunkForm('+meal.id+',0)">CANCEL</button>'
+              +'</div></div>';
+          } else {
+            addFoodSection = '<button class="add-food-prompt-btn" style="margin-top:8px;background:none;border:1px solid #ffe0b2;color:#e65100;border-radius:5px;padding:4px 10px;font-family:DM Mono,monospace;font-size:10px;cursor:pointer;" onclick="openChunkForm('+meal.id+',0,\''+escJs(meal.description)+'\')">+ Save as custom food</button>';
+          }
+        }
+
         mealCards+='<div class="'+cardClass+'"'+(state.mergeMode?' onclick="toggleMergeSelect('+meal.id+')"':'')+'>'+cbHtml
           +(state.mergeMode?'':'<button class="del-btn" onclick="delMeal('+meal.id+')">✕</button>')
-          +'<div class="meal-meta"><span class="meal-time">'+meal.time+'</span><span class="meal-num">Meal '+(i+1)+'</span>'+editBadge+mergedBadge+'</div>'
+          +'<div class="meal-meta"><span class="meal-time">'+meal.time+'</span><span class="meal-num">Meal '+(i+1)+'</span>'+editBadge+mergedBadge+genericBadge+'</div>'
           +'<div class="meal-desc">'+meal.description+'</div>'
           +(tags?'<div class="meal-tags">'+tags+'</div>':'')
           +'<div class="meal-values">'
@@ -825,22 +928,7 @@ function render() {
           +'<div class="val-group"><input class="val-input" type="number" value="'+meal.calories+'" style="color:#6b5b9a" onchange="updMeal('+meal.id+',\'calories\',this.value)" '+(state.mergeMode?'onclick="event.stopPropagation()"':'')+' ><span class="val-label">cal</span></div>'
           +'</div>'
           +(meal.notes?'<div class="meal-note">'+meal.notes+'</div>':'')
-          +(!meal.recognized && !state.mergeMode ? (state.addFoodMealId===meal.id ?
-            '<div class="add-food-form">'
-            +'<div class="add-food-form-title">ADD TO MY FOODS</div>'
-            +'<div class="food-field"><label class="food-field-label">FOOD NAME</label><input type="text" value="'+state.cfName+'" placeholder="Farmhouse Butter Bread" oninput="setCF(\'cfName\',this.value)"></div>'
-            +'<div class="food-field"><label class="food-field-label">KEYWORDS (comma separated)</label><input type="text" value="'+state.cfKeywords+'" placeholder="farmhouse bread, butter bread, farmhouse butter" oninput="setCF(\'cfKeywords\',this.value)"></div>'
-            +'<div class="food-field"><label class="food-field-label">SERVING SIZE NOTE</label><input type="text" value="'+state.cfServing+'" placeholder="1 slice (38g)" oninput="setCF(\'cfServing\',this.value)"></div>'
-            +'<div class="food-field-row">'
-            +'<div class="food-field"><label class="food-field-label">PROTEIN (g)</label><input type="number" value="'+state.cfProtein+'" placeholder="4" oninput="setCF(\'cfProtein\',this.value)"></div>'
-            +'<div class="food-field"><label class="food-field-label">CALORIES</label><input type="number" value="'+state.cfCalories+'" placeholder="110" oninput="setCF(\'cfCalories\',this.value)"></div>'
-            +'</div>'
-            +'<div class="food-form-actions">'
-            +'<button class="food-save-btn" onclick="saveCustomFood()">SAVE FOOD</button>'
-            +'<button class="food-cancel-btn" onclick="cancelAddFood()">CANCEL</button>'
-            +'</div></div>'
-            : '<div class="add-food-prompt"><span class="add-food-prompt-text">Not in database — add it for next time?</span><button class="add-food-prompt-btn" onclick="showAddFoodForm('+meal.id+')">+ Add Food</button></div>'
-          ) : '')
+          +addFoodSection
           +'</div>';
       });
       mealCards+='<div class="totals-bar">'
@@ -1135,33 +1223,49 @@ window.resetDay=function(){
   }
 };
 // ─── CUSTOM FOOD GLOBALS ─────────────────────────────────────────────────────
-window.showAddFoodForm=function(mealId) {
-  var meal = state.meals.find(function(m){ return m.id===mealId; });
-  state.addFoodMealId = mealId;
-  state.editingFoodId = null;
-  state.cfName = meal ? meal.description : '';
-  state.cfKeywords = meal ? meal.description.toLowerCase() : '';
-  state.cfServing = '';
-  state.cfProtein = meal ? String(meal.protein) : '';
-  state.cfCalories = meal ? String(meal.calories) : '';
+window.openChunkForm=function(mealId, chunkIdx, chunkText) {
+  if (!state.foodForms[mealId]) state.foodForms[mealId] = {};
+  state.foodForms[mealId][chunkIdx] = { open:true, name:chunkText||'', keywords:chunkText?chunkText.toLowerCase():'', serving:'', protein:'', calories:'' };
   render();
 };
+window.closeChunkForm=function(mealId, chunkIdx) {
+  if (state.foodForms[mealId]) delete state.foodForms[mealId][chunkIdx];
+  render();
+};
+window.setCFF=function(mealId, chunkIdx, field, val) {
+  if (!state.foodForms[mealId]) state.foodForms[mealId] = {};
+  if (!state.foodForms[mealId][chunkIdx]) state.foodForms[mealId][chunkIdx] = { open:true };
+  state.foodForms[mealId][chunkIdx][field] = val;
+};
+window.saveChunkFood=function(mealId, chunkIdx) {
+  var form = (state.foodForms[mealId]||{})[chunkIdx];
+  if (!form) return;
+  var p=parseInt(form.protein)||0, c=parseInt(form.calories)||0;
+  var name=(form.name||'').trim();
+  if (!name || (!p && !c)) { alert('Please enter a name and at least one of protein or calories.'); return; }
+  var data = { name:name, keywords:(form.keywords||'').trim(), serving_note:(form.serving||'').trim(), protein_g:p, calories:c };
+  sbSaveCustomFood(data).then(function(){ return sbGetCustomFoods(); })
+  .then(function(foods) {
+    state.customFoods = foods || [];
+    if (state.foodForms[mealId]) delete state.foodForms[mealId][chunkIdx];
+    render();
+  }).catch(function(e){ state.dbError='Save food failed: '+e.message; render(); });
+};
+window.setCF=function(field, val) { state[field]=val; };
 window.cancelAddFood=function() {
-  state.addFoodMealId=null; state.editingFoodId=null;
+  state.foodForms={}; state.editingFoodId=null;
   state.cfName=''; state.cfKeywords=''; state.cfServing=''; state.cfProtein=''; state.cfCalories='';
   render();
 };
-window.setCF=function(field, val) { state[field]=val; };
 window.saveCustomFood=function() {
   var p=parseInt(state.cfProtein)||0, c=parseInt(state.cfCalories)||0;
   if (!state.cfName.trim() || (!p && !c)) return;
   var data = { name:state.cfName.trim(), keywords:state.cfKeywords.trim(), serving_note:state.cfServing.trim(), protein_g:p, calories:c };
   if (state.editingFoodId) data.id = state.editingFoodId;
-  sbSaveCustomFood(data).then(function(saved) {
-    return sbGetCustomFoods();
-  }).then(function(foods) {
+  sbSaveCustomFood(data).then(function(){ return sbGetCustomFoods(); })
+  .then(function(foods) {
     state.customFoods = foods || [];
-    state.addFoodMealId = null; state.editingFoodId = null;
+    state.foodForms={}; state.editingFoodId=null;
     state.cfName=''; state.cfKeywords=''; state.cfServing=''; state.cfProtein=''; state.cfCalories='';
     render();
   }).catch(function(e){ state.dbError='Save food failed: '+e.message; render(); });
