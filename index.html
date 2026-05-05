@@ -227,6 +227,37 @@ textarea::placeholder{color:var(--text3);}
 .we-del:hover{color:var(--red);}
 
 .section-divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
+
+/* Custom foods */
+.add-food-prompt{margin-top:10px;background:#fff8f0;border:1px solid #ffe0b2;border-radius:var(--rs);padding:10px 12px;display:flex;justify-content:space-between;align-items:center;}
+.add-food-prompt-text{font-family:"DM Mono",monospace;font-size:10px;color:#e65100;}
+.add-food-prompt-btn{background:#ff6d00;border:none;border-radius:5px;padding:5px 12px;color:#fff;font-family:"DM Mono",monospace;font-size:10px;cursor:pointer;white-space:nowrap;}
+.add-food-form{margin-top:10px;background:#fff8f0;border:1px solid #ffe0b2;border-radius:var(--rs);padding:12px;}
+.add-food-form-title{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:2px;color:#e65100;margin-bottom:10px;}
+.food-field{margin-bottom:8px;}
+.food-field-label{font-family:"DM Mono",monospace;font-size:9px;color:var(--text3);letter-spacing:1px;margin-bottom:3px;display:block;}
+.food-field input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:13px;font-family:"DM Sans",sans-serif;outline:none;}
+.food-field input:focus{border-color:#ffb74d;}
+.food-field-row{display:flex;gap:8px;}
+.food-field-row .food-field{flex:1;}
+.food-form-actions{display:flex;gap:8px;margin-top:10px;}
+.food-save-btn{flex:1;background:#ff6d00;border:none;border-radius:6px;padding:9px;color:#fff;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:1px;cursor:pointer;}
+.food-save-btn:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed;}
+.food-cancel-btn{flex:1;background:none;border:1px solid var(--border2);border-radius:6px;padding:9px;color:var(--text2);font-family:"DM Mono",monospace;font-size:11px;cursor:pointer;}
+.custom-food-item{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.custom-food-item:last-child{border-bottom:none;}
+.cf-info{flex:1;}
+.cf-name{font-size:14px;color:var(--text);font-weight:500;margin-bottom:2px;}
+.cf-keywords{font-family:"DM Mono",monospace;font-size:10px;color:var(--text3);margin-bottom:2px;}
+.cf-serving{font-size:11px;color:var(--text2);font-style:italic;margin-bottom:3px;}
+.cf-macros{display:flex;gap:10px;}
+.cf-macro{font-family:"DM Mono",monospace;font-size:11px;color:var(--purple);}
+.cf-actions{display:flex;gap:6px;margin-left:10px;flex-shrink:0;}
+.cf-edit-btn{background:none;border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text2);font-family:"DM Mono",monospace;font-size:10px;cursor:pointer;}
+.cf-edit-btn:hover{border-color:var(--purple);color:var(--purple);}
+.cf-del-btn{background:none;border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text3);font-family:"DM Mono",monospace;font-size:10px;cursor:pointer;}
+.cf-del-btn:hover{border-color:var(--red);color:var(--red);}
+.custom-badge{font-family:"DM Mono",monospace;font-size:9px;color:#e65100;background:#fff3e0;padding:1px 5px;border-radius:6px;border:1px solid #ffe0b2;margin-left:4px;}
 </style>
 </head>
 <body>
@@ -313,6 +344,27 @@ async function sbLogDose(data) {
     method: 'POST', headers: Object.assign({}, sbHeaders(), { 'Prefer': 'return=minimal' }), body: JSON.stringify(data)
   });
   if (!res.ok) throw new Error('DOSE LOG ' + res.status);
+}
+
+async function sbGetCustomFoods() {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_custom_foods?select=*&order=name.asc', { headers: sbHeaders() });
+  if (!res.ok) return [];
+  return res.json();
+}
+async function sbSaveCustomFood(data) {
+  var isNew = !data.id;
+  var url = isNew ? SUPABASE_URL+'/rest/v1/zepbound_custom_foods' : SUPABASE_URL+'/rest/v1/zepbound_custom_foods?id=eq.'+data.id;
+  var method = isNew ? 'POST' : 'PATCH';
+  var prefer = isNew ? 'return=representation' : 'return=minimal';
+  var body = Object.assign({}, data); if (isNew) delete body.id;
+  var res = await fetch(url, { method: method, headers: Object.assign({}, sbHeaders(), {'Prefer': prefer}), body: JSON.stringify(body) });
+  if (!res.ok) throw new Error('SAVE FOOD ' + res.status);
+  if (isNew) { var rows = await res.json(); return rows[0]; }
+  return data;
+}
+async function sbDeleteCustomFood(id) {
+  var res = await fetch(SUPABASE_URL+'/rest/v1/zepbound_custom_foods?id=eq.'+id, { method: 'DELETE', headers: sbHeaders() });
+  if (!res.ok) throw new Error('DEL FOOD ' + res.status);
 }
 
 // ─── FOOD DATABASE ───────────────────────────────────────────────────────────
@@ -417,14 +469,23 @@ var FOODS = [
 function estimateMeal(text) {
   var lower = text.toLowerCase();
   var matched = [], usedGroups = {}, usedLabels = {}, blockedGroups = {};
-  var sorted = FOODS.slice().sort(function(a,b) {
+  // Build combined food list: custom foods take priority (checked first)
+  var customAsBuiltin = (state.customFoods || []).map(function(cf) {
+    var keywords = cf.keywords ? cf.keywords.toLowerCase().split(',').map(function(k){return k.trim();}).filter(Boolean) : [];
+    // also match on the name itself
+    var nameKey = cf.name.toLowerCase();
+    if (keywords.indexOf(nameKey) === -1) keywords.unshift(nameKey);
+    return { keys: keywords, p: cf.protein_g, c: cf.calories, label: cf.name, group: 'custom_'+cf.id, custom: true };
+  });
+  var allFoods = customAsBuiltin.concat(FOODS);
+  var sorted = allFoods.slice().sort(function(a,b) {
     return Math.max.apply(null, b.keys.map(function(k){return k.length;})) - Math.max.apply(null, a.keys.map(function(k){return k.length;}));
   });
   for (var i = 0; i < sorted.length; i++) {
     var food = sorted[i];
     for (var j = 0; j < food.keys.length; j++) {
       var key = food.keys[j];
-      if (lower.indexOf(key) === -1) continue;
+      if (!key || lower.indexOf(key) === -1) continue;
       if (usedLabels[food.label]) continue;
       if (food.group && usedGroups[food.group]) continue;
       if (food.group && blockedGroups[food.group]) continue;
@@ -443,12 +504,13 @@ function estimateMeal(text) {
     else if (/\bthree\b|3x/.test(ctx)) mult = 3;
     tp += Math.round(food.p * mult); tc += Math.round(food.c * mult);
   });
-  var note = matched.length === 0 ? 'Food not in database - tap the protein number to edit manually.'
+  var hasCustom = matched.some(function(f){ return f.custom; });
+  var note = matched.length === 0 ? 'Food not in database - add it below so it matches next time!'
     : tp >= 40 ? tp + 'g protein is a strong meal - exactly the Zepbound approach.'
     : tp >= 25 ? tp + 'g protein is solid. Protein-first is working.'
     : tp >= 15 ? tp + 'g here - aim to make up the gap at your next meal.'
     : 'Light protein here. Prioritize protein at your next meal or add a snack.';
-  return { protein: tp, calories: tc, items: matched.length > 0 ? matched.map(function(f){return f.label;}) : [text], notes: note, recognized: matched.length > 0 };
+  return { protein: tp, calories: tc, items: matched.length > 0 ? matched.map(function(f){return f.label;}) : [text], notes: note, recognized: matched.length > 0, hasCustom: hasCustom };
 }
 
 function pColor(pct) { return pct >= 80 ? '#43a047' : pct >= 50 ? '#f9a825' : '#e53935'; }
@@ -463,7 +525,10 @@ var state = {
   // dose
   currentDoseIndex:0, doseLog:[],
   // weight
-  weights:[], weightInput:'', weightDateInput:todayISO(), weightChartRange:'all',
+  weights:[], weightInput:"", weightDateInput:todayISO(), weightChartRange:"all",
+  // custom foods
+  customFoods:[], addFoodMealId:null, editingFoodId:null,
+  cfName:"", cfKeywords:"", cfServing:"", cfProtein:"", cfCalories:"",
 };
 
 function setState(updates) { Object.assign(state, updates); render(); }
@@ -489,8 +554,8 @@ async function saveSettings() {
 
 async function init() {
   try {
-    var results = await Promise.all([sbGet(todayISO()), sbHistory(), sbGetSettings(), sbGetWeights(), sbGetDoseLog()]);
-    var row=results[0], hist=results[1], settings=results[2], weights=results[3], doseLog=results[4];
+    var results = await Promise.all([sbGet(todayISO()), sbHistory(), sbGetSettings(), sbGetWeights(), sbGetDoseLog(), sbGetCustomFoods()]);
+    var row=results[0], hist=results[1], settings=results[2], weights=results[3], doseLog=results[4], customFoods=results[5];
     if (row) {
       state.meals = row.meals || [];
       state.waterOz = row.water_oz || 0;
@@ -501,6 +566,7 @@ async function init() {
     state.history = hist || [];
     state.weights = weights || [];
     state.doseLog = doseLog || [];
+    state.customFoods = customFoods || [];
     if (settings && settings.current_dose_index != null) {
       state.currentDoseIndex = settings.current_dose_index;
     }
@@ -733,7 +799,10 @@ function render() {
       mealCards = mergeBar;
       state.meals.forEach(function(meal,i) {
         var tags='';
-        if (meal.recognized) tags=meal.items.map(function(it){return '<span class="meal-tag">'+it+'</span>';}).join('');
+        if (meal.recognized) tags=meal.items.map(function(it){
+          var isCustom = state.customFoods.some(function(cf){ return cf.name===it; });
+          return '<span class="meal-tag">'+it+(isCustom?'<span class="custom-badge">MY FOOD</span>':'')+'</span>';
+        }).join('');
         var editBadge=!meal.recognized?'<span class="meal-edit-badge">Edit values</span>':'';
         var mergedBadge=meal.merged?'<span class="meal-edit-badge" style="background:#e8f5e9;color:#2e7d32">Merged</span>':'';
         var isSelected = state.mergeSelected.indexOf(meal.id) >= 0;
@@ -749,6 +818,22 @@ function render() {
           +'<div class="val-group"><input class="val-input" type="number" value="'+meal.calories+'" style="color:#6b5b9a" onchange="updMeal('+meal.id+',\'calories\',this.value)" '+(state.mergeMode?'onclick="event.stopPropagation()"':'')+' ><span class="val-label">cal</span></div>'
           +'</div>'
           +(meal.notes?'<div class="meal-note">'+meal.notes+'</div>':'')
+          +(!meal.recognized && !state.mergeMode ? (state.addFoodMealId===meal.id ?
+            '<div class="add-food-form">'
+            +'<div class="add-food-form-title">ADD TO MY FOODS</div>'
+            +'<div class="food-field"><label class="food-field-label">FOOD NAME</label><input type="text" value="'+state.cfName+'" placeholder="Farmhouse Butter Bread" oninput="setCF(\'cfName\',this.value)"></div>'
+            +'<div class="food-field"><label class="food-field-label">KEYWORDS (comma separated)</label><input type="text" value="'+state.cfKeywords+'" placeholder="farmhouse bread, butter bread, farmhouse butter" oninput="setCF(\'cfKeywords\',this.value)"></div>'
+            +'<div class="food-field"><label class="food-field-label">SERVING SIZE NOTE</label><input type="text" value="'+state.cfServing+'" placeholder="1 slice (38g)" oninput="setCF(\'cfServing\',this.value)"></div>'
+            +'<div class="food-field-row">'
+            +'<div class="food-field"><label class="food-field-label">PROTEIN (g)</label><input type="number" value="'+state.cfProtein+'" placeholder="4" oninput="setCF(\'cfProtein\',this.value)"></div>'
+            +'<div class="food-field"><label class="food-field-label">CALORIES</label><input type="number" value="'+state.cfCalories+'" placeholder="110" oninput="setCF(\'cfCalories\',this.value)"></div>'
+            +'</div>'
+            +'<div class="food-form-actions">'
+            +'<button class="food-save-btn" onclick="saveCustomFood()">SAVE FOOD</button>'
+            +'<button class="food-cancel-btn" onclick="cancelAddFood()">CANCEL</button>'
+            +'</div></div>'
+            : '<div class="add-food-prompt"><span class="add-food-prompt-text">Not in database — add it for next time?</span><button class="add-food-prompt-btn" onclick="showAddFoodForm('+meal.id+')">+ Add Food</button></div>'
+          ) : '')
           +'</div>';
       });
       mealCards+='<div class="totals-bar">'
@@ -941,6 +1026,49 @@ function render() {
     tabContent='<div style="margin-top:18px"><div class="card-label">Past 30 Days</div>'+histItems+'</div>';
   }
 
+  // ── SETTINGS TAB ─────────────────────────────────────────────────────────
+  else if (state.activeTab==='settings') {
+    var cfListHtml='';
+    if (state.customFoods.length===0) {
+      cfListHtml='<div class="empty" style="padding:32px 20px"><div class="empty-icon">🥄</div><div class="empty-text">No custom foods yet.</div><div class="empty-sub">When a meal is unrecognized, tap "Add Food" on the meal card.</div></div>';
+    } else {
+      cfListHtml = state.customFoods.map(function(cf) {
+        return '<div class="custom-food-item">'
+          +'<div class="cf-info">'
+          +'<div class="cf-name">'+cf.name+'</div>'
+          +(cf.keywords?'<div class="cf-keywords">Keywords: '+cf.keywords+'</div>':'')
+          +(cf.serving_note?'<div class="cf-serving">Serving: '+cf.serving_note+'</div>':'')
+          +'<div class="cf-macros"><span class="cf-macro">'+cf.protein_g+'g protein</span><span class="cf-macro">'+cf.calories+' cal</span></div>'
+          +'</div>'
+          +'<div class="cf-actions">'
+          +'<button class="cf-edit-btn" onclick="editCustomFood('+cf.id+')">Edit</button>'
+          +'<button class="cf-del-btn" onclick="deleteCustomFood('+cf.id+')">✕</button>'
+          +'</div></div>';
+      }).join('');
+    }
+    // show edit form if editing from settings tab
+    var settingsFormHtml = (state.addFoodMealId==='settings') ?
+      '<div class="add-food-form" style="margin-bottom:14px">'
+      +'<div class="add-food-form-title">'+(state.editingFoodId?'EDIT FOOD':'ADD NEW FOOD')+'</div>'
+      +'<div class="food-field"><label class="food-field-label">FOOD NAME</label><input type="text" value="'+state.cfName+'" placeholder="e.g. Farmhouse Butter Bread" oninput="setCF(\'cfName\',this.value)"></div>'
+      +'<div class="food-field"><label class="food-field-label">KEYWORDS (comma separated)</label><input type="text" value="'+state.cfKeywords+'" placeholder="farmhouse bread, butter bread" oninput="setCF(\'cfKeywords\',this.value)"></div>'
+      +'<div class="food-field"><label class="food-field-label">SERVING SIZE NOTE</label><input type="text" value="'+state.cfServing+'" placeholder="1 slice (38g)" oninput="setCF(\'cfServing\',this.value)"></div>'
+      +'<div class="food-field-row">'
+      +'<div class="food-field"><label class="food-field-label">PROTEIN (g)</label><input type="number" value="'+state.cfProtein+'" placeholder="4" oninput="setCF(\'cfProtein\',this.value)"></div>'
+      +'<div class="food-field"><label class="food-field-label">CALORIES</label><input type="number" value="'+state.cfCalories+'" placeholder="110" oninput="setCF(\'cfCalories\',this.value)"></div>'
+      +'</div>'
+      +'<div class="food-form-actions">'
+      +'<button class="food-save-btn" onclick="saveCustomFood()">'+(state.editingFoodId?'UPDATE FOOD':'SAVE FOOD')+'</button>'
+      +'<button class="food-cancel-btn" onclick="cancelAddFood()">CANCEL</button>'
+      +'</div></div>'
+      : '<button class="dose-log-btn" style="margin-bottom:14px" onclick="openNewFoodForm()">+ Add New Food Manually</button>';
+    tabContent='<div style="margin-top:18px">'
+      +settingsFormHtml
+      +'<div class="card"><div class="card-label">My Custom Foods ('+state.customFoods.length+')</div>'
+      +cfListHtml
+      +'</div></div>';
+  }
+
   var badgeText = buildBadgeText();
   app.innerHTML=errEl
     +'<div class="header"><div class="header-inner">'
@@ -956,7 +1084,7 @@ function render() {
     +'<div><div class="progress-labels"><span class="pleft">Water '+state.waterOz+'/'+WATER_GOAL+'oz</span><span class="pright" style="color:'+wc+'">'+(watRem>0?watRem+'oz to go':'Goal reached ✓')+'</span></div><div class="progress-track"><div class="progress-fill" style="width:'+watPct+'%;background:linear-gradient(90deg,'+wc+'88,'+wc+')"></div></div></div>'
     +'</div></div></div>'
     +'<div class="tabs">'
-    +['log','water','summary','dose','weight','history'].map(function(t){return '<button class="tab'+(state.activeTab===t?' active':'')+'" onclick="setTab(\''+t+'\')">'+t+'</button>';}).join('')
+    +['log','water','summary','dose','weight','history','settings'].map(function(t){return '<button class="tab'+(state.activeTab===t?' active':'')+'" onclick="setTab(\''+t+'\')">'+t+'</button>';}).join('')
     +'</div>'
     +'<div class="main">'+tabContent+'</div>';
 
@@ -999,6 +1127,62 @@ window.resetDay=function(){
     scheduleSave(); render();
   }
 };
+// ─── CUSTOM FOOD GLOBALS ─────────────────────────────────────────────────────
+window.showAddFoodForm=function(mealId) {
+  var meal = state.meals.find(function(m){ return m.id===mealId; });
+  state.addFoodMealId = mealId;
+  state.editingFoodId = null;
+  state.cfName = meal ? meal.description : '';
+  state.cfKeywords = meal ? meal.description.toLowerCase() : '';
+  state.cfServing = '';
+  state.cfProtein = meal ? String(meal.protein) : '';
+  state.cfCalories = meal ? String(meal.calories) : '';
+  render();
+};
+window.cancelAddFood=function() {
+  state.addFoodMealId=null; state.editingFoodId=null;
+  state.cfName=''; state.cfKeywords=''; state.cfServing=''; state.cfProtein=''; state.cfCalories='';
+  render();
+};
+window.setCF=function(field, val) { state[field]=val; };
+window.saveCustomFood=function() {
+  var p=parseInt(state.cfProtein)||0, c=parseInt(state.cfCalories)||0;
+  if (!state.cfName.trim() || (!p && !c)) return;
+  var data = { name:state.cfName.trim(), keywords:state.cfKeywords.trim(), serving_note:state.cfServing.trim(), protein_g:p, calories:c };
+  if (state.editingFoodId) data.id = state.editingFoodId;
+  sbSaveCustomFood(data).then(function(saved) {
+    return sbGetCustomFoods();
+  }).then(function(foods) {
+    state.customFoods = foods || [];
+    state.addFoodMealId = null; state.editingFoodId = null;
+    state.cfName=''; state.cfKeywords=''; state.cfServing=''; state.cfProtein=''; state.cfCalories='';
+    render();
+  }).catch(function(e){ state.dbError='Save food failed: '+e.message; render(); });
+};
+window.editCustomFood=function(id) {
+  var cf = state.customFoods.find(function(f){ return f.id===id; });
+  if (!cf) return;
+  state.editingFoodId = id;
+  state.addFoodMealId = 'settings';
+  state.cfName = cf.name;
+  state.cfKeywords = cf.keywords||'';
+  state.cfServing = cf.serving_note||'';
+  state.cfProtein = String(cf.protein_g);
+  state.cfCalories = String(cf.calories);
+  setState({activeTab:'settings'});
+};
+window.openNewFoodForm=function() {
+  state.editingFoodId=null; state.addFoodMealId='settings';
+  state.cfName=''; state.cfKeywords=''; state.cfServing=''; state.cfProtein=''; state.cfCalories='';
+  render();
+};
+window.deleteCustomFood=function(id) {
+  if (!confirm('Delete this custom food?')) return;
+  sbDeleteCustomFood(id).then(function(){
+    return sbGetCustomFoods();
+  }).then(function(foods){ state.customFoods=foods||[]; render(); }).catch(function(e){ state.dbError='Delete failed: '+e.message; render(); });
+};
+
 window.onerror=function(msg,src,line,col,err){
   document.getElementById('app').innerHTML='<div style="padding:20px;font-family:monospace;color:#c00;background:#fff0f0;margin:20px;border-radius:8px;border:1px solid #fcc"><b>Error</b><br>'+msg+'<br>Line: '+line+'</div>';
 };
