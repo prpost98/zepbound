@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Zepbound Tracker v1.5</title>
+<title>Zepbound Tracker v1.5.1</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root {
@@ -1194,7 +1194,7 @@ function render() {
     +'<div class="header"><div class="header-inner">'
     +'<div class="header-top"><div>'
     +'<div class="badge'+(isDoseDay?' dose-day':'')+'">'+badgeText+'</div>'
-    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.5</span></div>'
+    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.5.1</span></div>'
     +'<div class="header-sub"><span class="header-date">'+today+'</span>'+syncEl+'</div>'
     +'</div>'
     +'<div class="protein-display"><div class="protein-big" style="color:'+pc+'">'+tp+'g</div><div class="protein-label">PROTEIN</div></div>'
@@ -1273,6 +1273,19 @@ window.saveChunkFood=function(mealId, chunkIdx) {
   .then(function(foods) {
     state.customFoods = foods || [];
     if (state.foodForms[mealId]) delete state.foodForms[mealId][chunkIdx];
+    // Re-estimate the meal now that the custom food is in state
+    state.meals = state.meals.map(function(m) {
+      if (m.id !== mealId) return m;
+      var est = estimateMeal(m.description);
+      return Object.assign({}, m, {
+        protein: est.protein, calories: est.calories,
+        items: est.items, notes: est.notes,
+        recognized: est.recognized, allGeneric: est.allGeneric,
+        shouldSuggestAdd: est.shouldSuggestAdd,
+        unrecognizedChunks: est.unrecognizedChunks
+      });
+    });
+    scheduleSave();
     render();
   }).catch(function(e){ state.dbError='Save food failed: '+e.message; render(); });
 };
@@ -1292,6 +1305,18 @@ window.saveCustomFood=function() {
     state.customFoods = foods || [];
     state.foodForms={}; state.editingFoodId=null;
     state.cfName=''; state.cfKeywords=''; state.cfServing=''; state.cfProtein=''; state.cfCalories='';
+    // Re-estimate all meals so any that match the updated food get refreshed
+    state.meals = state.meals.map(function(m) {
+      var est = estimateMeal(m.description);
+      return Object.assign({}, m, {
+        protein: est.protein, calories: est.calories,
+        items: est.items, notes: est.notes,
+        recognized: est.recognized, allGeneric: est.allGeneric,
+        shouldSuggestAdd: est.shouldSuggestAdd,
+        unrecognizedChunks: est.unrecognizedChunks
+      });
+    });
+    scheduleSave();
     render();
   }).catch(function(e){ state.dbError='Save food failed: '+e.message; render(); });
 };
