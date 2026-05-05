@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Zepbound Tracker v1.5.1</title>
+<title>Zepbound Tracker v1.5.2</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root {
@@ -499,8 +499,41 @@ function estimateMeal(text) {
       matched.push(food); usedLabels[food.label] = true;
       if (food.group) usedGroups[food.group] = true;
       if (food.blocks) { food.blocks.forEach(function(b){ blockedGroups[b] = true; }); }
+      // If a custom food matched, block the generic groups that cover the same text
+      if (food.custom) {
+        food.keys.forEach(function(k) {
+          if (!keyMatches(lower, k)) return;
+          // Find any generic built-in foods whose key also matches the same region and block their group
+          FOODS.forEach(function(bf) {
+            if (!bf.generic) return;
+            bf.keys.forEach(function(bk) {
+              if (keyMatches(lower, bk) && bf.group) blockedGroups[bf.group] = true;
+            });
+          });
+        });
+      }
       break;
     }
+  }
+  // Post-filter: remove any generic matches that are fully covered by a custom food match
+  var customMatched = matched.filter(function(f){ return f.custom; });
+  if (customMatched.length > 0) {
+    matched = matched.filter(function(f) {
+      if (!f.generic || f.custom) return true;
+      // Check if every region this generic key matches is also covered by a custom food key
+      var genericMatchKey = f.keys.find(function(k){ return keyMatches(lower, k); });
+      if (!genericMatchKey) return false;
+      var covered = customMatched.some(function(cf) {
+        return cf.keys.some(function(ck) {
+          if (!keyMatches(lower, ck)) return false;
+          // Both keys appear in the same part of the string - consider overlapping
+          var gi = lower.indexOf(genericMatchKey);
+          var ci = lower.indexOf(ck);
+          return Math.abs(gi - ci) < Math.max(genericMatchKey.length, ck.length) + 8;
+        });
+      });
+      return !covered;
+    });
   }
   var tp = 0, tc = 0;
   matched.forEach(function(food) {
@@ -1194,7 +1227,7 @@ function render() {
     +'<div class="header"><div class="header-inner">'
     +'<div class="header-top"><div>'
     +'<div class="badge'+(isDoseDay?' dose-day':'')+'">'+badgeText+'</div>'
-    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.5.1</span></div>'
+    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.5.2</span></div>'
     +'<div class="header-sub"><span class="header-date">'+today+'</span>'+syncEl+'</div>'
     +'</div>'
     +'<div class="protein-display"><div class="protein-big" style="color:'+pc+'">'+tp+'g</div><div class="protein-label">PROTEIN</div></div>'
