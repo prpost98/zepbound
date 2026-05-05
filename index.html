@@ -151,7 +151,7 @@ var WATER_GOAL = 80;
 function todayISO() { return new Date().toISOString().slice(0,10); }
 
 function sbHeaders() {
-  return { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
+  return { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' };
 }
 
 async function sbGet(date) {
