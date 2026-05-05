@@ -148,7 +148,7 @@ var SUPABASE_KEY = 'sb_publishable_g4Sy3-7Mrq3JXk7C5WJ2WA_SI7rhub8';
 var PROTEIN_GOAL = 140;
 var WATER_GOAL = 80;
 
-function todayISO() { return new Date().toISOString().slice(0,10); }
+function todayISO() { var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
 function sbHeaders() {
   return { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' };
@@ -353,7 +353,14 @@ async function init() {
   try {
     var results = await Promise.all([sbGet(todayISO()), sbHistory()]);
     var row = results[0], hist = results[1];
-    if (row) { state.meals=row.meals||[]; state.waterOz=row.water_oz||0; state.dayNote=row.day_note||''; }
+    if (row) {
+      state.meals = row.meals || [];
+      state.waterOz = row.water_oz || 0;
+      state.dayNote = row.day_note || '';
+      state.dbError = null;
+    } else {
+      state.dbError = 'DEBUG: sbGet returned null for date ' + todayISO() + '. History has ' + (hist||[]).length + ' rows.';
+    }
     state.history = hist||[];
   } catch(e) {
     state.dbError = 'Could not load data: ' + e.message;
