@@ -357,9 +357,6 @@ async function init() {
       state.meals = row.meals || [];
       state.waterOz = row.water_oz || 0;
       state.dayNote = row.day_note || '';
-      state.dbError = null;
-    } else {
-      state.dbError = 'DEBUG: sbGet returned null for date ' + todayISO() + '. History has ' + (hist||[]).length + ' rows.';
     }
     state.history = hist||[];
   } catch(e) {
