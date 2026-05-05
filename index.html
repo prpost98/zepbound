@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Zepbound Tracker</title>
+<title>Zepbound Tracker v1.4</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root {
@@ -849,6 +849,15 @@ function render() {
       }
       mealCards = mergeBar;
       state.meals.forEach(function(meal,i) {
+        // Rehydrate fields that aren't persisted to DB
+        if (meal.shouldSuggestAdd === undefined || meal.allGeneric === undefined) {
+          var reest = estimateMeal(meal.description);
+          meal.shouldSuggestAdd = reest.shouldSuggestAdd;
+          meal.allGeneric = reest.allGeneric;
+          meal.unrecognizedChunks = reest.unrecognizedChunks;
+          meal.recognized = reest.recognized;
+        }
+
         var tags = meal.items.map(function(it){
           var isCustom = state.customFoods.some(function(cf){ return cf.name===it; });
           return '<span class="meal-tag">'+it+(isCustom?'<span class="custom-badge">MY FOOD</span>':'')+'</span>';
@@ -1169,7 +1178,7 @@ function render() {
     +'<div class="header"><div class="header-inner">'
     +'<div class="header-top"><div>'
     +'<div class="badge'+(isDoseDay?' dose-day':'')+'">'+badgeText+'</div>'
-    +'<div class="header-title">Daily Tracker</div>'
+    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.4</span></div>'
     +'<div class="header-sub"><span class="header-date">'+today+'</span>'+syncEl+'</div>'
     +'</div>'
     +'<div class="protein-display"><div class="protein-big" style="color:'+pc+'">'+tp+'g</div><div class="protein-label">PROTEIN</div></div>'
