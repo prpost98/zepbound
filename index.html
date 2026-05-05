@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Zepbound Tracker v1.4</title>
+<title>Zepbound Tracker v1.5</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root {
@@ -514,35 +514,47 @@ function estimateMeal(text) {
     tp += Math.round(food.p * mult); tc += Math.round(food.c * mult);
   });
 
-  // Determine if we should suggest adding foods:
-  // 1. Nothing matched at all
-  // 2. Only generic fallbacks matched but entry has 2+ words (specific item likely)
-  var allGeneric = matched.length > 0 && matched.every(function(f){ return f.generic && !f.custom; });
-  var wordCount = text.trim().split(/\s+/).length;
-  var shouldSuggestAdd = matched.length === 0 || (allGeneric && wordCount >= 2);
-
-  // Try to extract unrecognized chunks for per-item add suggestions
-  // Split on common separators, filter out connector words, dedupe matched keys
-  var matchedKeysCovered = [];
-  matched.forEach(function(f){ f.keys.forEach(function(k){ if(keyMatches(lower,k)) matchedKeysCovered.push(k.toLowerCase()); }); });
   var STOP_WORDS = ['and','with','a','an','the','of','on','some','my','for','plus','also','then','one','two','three','half','slice','slices','cup','cups','oz','tbsp','tsp','scoop','piece','pieces','small','large','medium'];
-  // Split input into chunks by common separators
-  var rawChunks = text.split(/,|;|and|with|plus|then/i).map(function(c){ return c.trim(); }).filter(Boolean);
+
+  // Split into chunks on common separators
+  var rawChunks = text.split(/,|;|\band\b|\bwith\b|\bplus\b|\bthen\b/i).map(function(c){ return c.trim(); }).filter(Boolean);
+  if (rawChunks.length === 0) rawChunks = [text];
+
+  // Per-chunk: flag if unrecognized OR only covered by a generic match
   var unrecognizedChunks = [];
   rawChunks.forEach(function(chunk) {
     var chunkLower = chunk.toLowerCase();
-    // Skip if this chunk is fully covered by a matched key
-    var covered = matchedKeysCovered.some(function(k){ return keyMatches(chunkLower, k); });
-    // Skip if chunk is just stop words / numbers
-    var meaningful = chunk.trim().split(/\s+/).filter(function(w){ return !STOP_WORDS.includes(w.toLowerCase()) && !/^\d+$/.test(w); });
-    if (!covered && meaningful.length > 0) {
-      // Clean up the chunk - remove leading quantities/stop words
-      var cleaned = chunk.trim().replace(/^(\d+\s*)?(slice|slices|cup|cups|oz|tbsp|tsp|scoop|piece|pieces|small|large|medium|one|two|three|half)\s+/i, '').trim();
-      if (cleaned.length > 1) unrecognizedChunks.push(cleaned);
+    var coveringMatches = matched.filter(function(f) {
+      return f.keys.some(function(k){ return keyMatches(chunkLower, k); });
+    });
+    var meaningful = chunk.trim().split(/\s+/).filter(function(w){
+      return STOP_WORDS.indexOf(w.toLowerCase()) === -1 && !/^\d+$/.test(w);
+    });
+    if (meaningful.length === 0) return;
+    var cleaned = chunk.trim().replace(/^(\d+\s*)?(slice|slices|cup|cups|oz|tbsp|tsp|scoop|piece|pieces|small|large|medium|one|two|three|half)\s+/i, '').trim();
+    if (cleaned.length < 2) return;
+    if (coveringMatches.length === 0) {
+      unrecognizedChunks.push({ text: cleaned, reason: 'unrecognized' });
+    } else if (coveringMatches.every(function(f){ return f.generic && !f.custom; }) && meaningful.length >= 2) {
+      unrecognizedChunks.push({ text: cleaned, reason: 'generic' });
     }
   });
-  // Dedupe
-  unrecognizedChunks = unrecognizedChunks.filter(function(c,i,arr){ return arr.indexOf(c) === i; });
+  // Single-chunk entry that only hit a generic — flag it too
+  if (rawChunks.length === 1 && unrecognizedChunks.length === 0) {
+    var allGenericSingle = matched.length > 0 && matched.every(function(f){ return f.generic && !f.custom; });
+    if (allGenericSingle && text.trim().split(/\s+/).length >= 2) {
+      var c0 = text.trim().replace(/^(\d+\s*)?(slice|slices|cup|cups|oz|tbsp|tsp|scoop|piece|pieces|small|large|medium|one|two|three|half)\s+/i, '').trim();
+      unrecognizedChunks.push({ text: c0, reason: 'generic' });
+    }
+  }
+  // Dedupe by text
+  var seen = {};
+  unrecognizedChunks = unrecognizedChunks.filter(function(c){
+    if (seen[c.text]) return false; seen[c.text] = true; return true;
+  });
+
+  var allGeneric = matched.length > 0 && matched.every(function(f){ return f.generic && !f.custom; });
+  var shouldSuggestAdd = matched.length === 0 || unrecognizedChunks.length > 0;
 
   var note = matched.length === 0 ? 'No items recognized — add them below so they match next time!'
     : tp >= 40 ? tp + 'g protein is a strong meal - exactly the Zepbound approach.'
@@ -554,7 +566,7 @@ function estimateMeal(text) {
     protein: tp, calories: tc,
     items: matched.length > 0 ? matched.map(function(f){return f.label;}) : [text],
     notes: note,
-    recognized: matched.length > 0 && !allGeneric,
+    recognized: matched.length > 0,
     allGeneric: allGeneric,
     shouldSuggestAdd: shouldSuggestAdd,
     unrecognizedChunks: unrecognizedChunks
@@ -872,15 +884,19 @@ function render() {
         // Build add-food section: show per-chunk forms or collapsed prompt
         var addFoodSection = '';
         if (!state.mergeMode && meal.shouldSuggestAdd) {
-          var chunks = meal.unrecognizedChunks && meal.unrecognizedChunks.length > 0 ? meal.unrecognizedChunks : [meal.description];
+          var rawChunks2 = meal.unrecognizedChunks && meal.unrecognizedChunks.length > 0
+            ? meal.unrecognizedChunks
+            : [{ text: meal.description, reason: 'unrecognized' }];
           var forms = state.foodForms[meal.id] || {};
-          var chunkHtml = chunks.map(function(chunk, ci) {
-            var formKey = meal.id + '_' + ci;
+          var chunkHtml = rawChunks2.map(function(chunkObj, ci) {
+            var chunkText = typeof chunkObj === 'string' ? chunkObj : chunkObj.text;
+            var chunkReason = typeof chunkObj === 'string' ? 'unrecognized' : chunkObj.reason;
+            var reasonLabel = chunkReason === 'generic' ? '(generic match — save specific version)' : '';
             var form = forms[ci];
             if (form && form.open) {
               return '<div class="add-food-form" style="margin-top:8px">'
-                +'<div class="add-food-form-title">ADD: '+chunk.toUpperCase()+'</div>'
-                +'<div class="food-field"><label class="food-field-label">FOOD NAME</label><input type="text" value="'+escHtml(form.name||chunk)+'" oninput="setCFF('+meal.id+','+ci+',\'name\',this.value)" placeholder="'+escHtml(chunk)+'"></div>'
+                +'<div class="add-food-form-title">ADD: '+escHtml(chunkText.toUpperCase())+'</div>'
+                +'<div class="food-field"><label class="food-field-label">FOOD NAME</label><input type="text" value="'+escHtml(form.name||chunkText)+'" oninput="setCFF('+meal.id+','+ci+',\'name\',this.value)" placeholder="'+escHtml(chunkText)+'"></div>'
                 +'<div class="food-field"><label class="food-field-label">KEYWORDS (comma separated)</label><input type="text" value="'+escHtml(form.keywords||'')+'" oninput="setCFF('+meal.id+','+ci+',\'keywords\',this.value)" placeholder="e.g. farmhouse bread, butter bread"></div>'
                 +'<div class="food-field"><label class="food-field-label">SERVING SIZE</label><input type="text" value="'+escHtml(form.serving||'')+'" oninput="setCFF('+meal.id+','+ci+',\'serving\',this.value)" placeholder="e.g. 1 slice (38g)"></div>'
                 +'<div class="food-field-row">'
@@ -893,13 +909,13 @@ function render() {
                 +'</div></div>';
             } else {
               return '<div class="add-food-prompt" style="margin-top:6px">'
-                +'<span class="add-food-prompt-text">'+escHtml(chunk)+'</span>'
-                +'<button class="add-food-prompt-btn" onclick="openChunkForm('+meal.id+','+ci+',\''+escJs(chunk)+'\')">+ Add</button>'
+                +'<span class="add-food-prompt-text">'+escHtml(chunkText)+(reasonLabel?' <em style=\"font-size:9px;\">'+reasonLabel+'</em>':'')+'</span>'
+                +'<button class="add-food-prompt-btn" onclick="openChunkForm('+meal.id+','+ci+',\''+escJs(chunkText)+'\')">+ Add</button>'
                 +'</div>';
             }
           }).join('');
           addFoodSection = '<div style="margin-top:8px">'
-            +'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;color:#e65100;margin-bottom:4px;">'+(meal.recognized?'SAVE SPECIFIC VERSION:':'NOT RECOGNIZED — ADD TO MY FOODS:')+'</div>'
+            +'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1px;color:#e65100;margin-bottom:4px;">SAVE TO MY FOODS:</div>'
             +chunkHtml+'</div>';
         }
         // Always show a collapsed "+ Save a food" button on recognized meals too
@@ -1178,7 +1194,7 @@ function render() {
     +'<div class="header"><div class="header-inner">'
     +'<div class="header-top"><div>'
     +'<div class="badge'+(isDoseDay?' dose-day':'')+'">'+badgeText+'</div>'
-    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.4</span></div>'
+    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.5</span></div>'
     +'<div class="header-sub"><span class="header-date">'+today+'</span>'+syncEl+'</div>'
     +'</div>'
     +'<div class="protein-display"><div class="protein-big" style="color:'+pc+'">'+tp+'g</div><div class="protein-label">PROTEIN</div></div>'
