@@ -254,7 +254,7 @@ function isTuesday() { return new Date().getDay() === INJECTION_DAY; }
 function weeksSinceStart() {
   var start = new Date(DOSE_START_DATE + 'T12:00:00');
   var now = new Date();
-  return Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000));
+  return Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000)) + 1;
 }
 
 function sbHeaders() { return { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' }; }
@@ -558,7 +558,7 @@ function advanceDose() {
   if (state.currentDoseIndex >= DOSE_SEQUENCE.length - 1) return;
   state.currentDoseIndex++;
   saveSettings();
-  var logEntry = { date: todayISO(), dose_mg: DOSE_SEQUENCE[state.currentDoseIndex], week: weeksSinceStart() + 1 };
+  var logEntry = { date: todayISO(), dose_mg: DOSE_SEQUENCE[state.currentDoseIndex], week: weeksSinceStart() };
   sbLogDose(logEntry).then(function(){
     return sbGetDoseLog();
   }).then(function(log){ state.doseLog = log || []; render(); }).catch(function(){});
@@ -570,7 +570,7 @@ function revertDose() {
   saveSettings(); render();
 }
 function logDoseToday() {
-  var logEntry = { date: todayISO(), dose_mg: DOSE_SEQUENCE[state.currentDoseIndex], week: weeksSinceStart() + 1 };
+  var logEntry = { date: todayISO(), dose_mg: DOSE_SEQUENCE[state.currentDoseIndex], week: weeksSinceStart() };
   sbLogDose(logEntry).then(function(){
     return sbGetDoseLog();
   }).then(function(log){ state.doseLog = log || []; render(); }).catch(function(){});
@@ -611,7 +611,7 @@ function shareToClaude() {
   var mealLines=state.meals.map(function(m,i){ return '  Meal '+(i+1)+' ('+m.time+'): '+m.description+' - '+m.protein+'g protein, '+m.calories+' cal'; }).join('\n');
   var latestWeight = state.weights.length > 0 ? state.weights[state.weights.length-1].weight_lbs : null;
   var msg='Here is my Zepbound daily summary for '+date+':\n\n'
-    +'CURRENT DOSE: '+DOSE_SEQUENCE[state.currentDoseIndex]+'mg (Week '+(weeksSinceStart()+1)+')\n'
+    +'CURRENT DOSE: '+DOSE_SEQUENCE[state.currentDoseIndex]+'mg (Week '+weeksSinceStart()+')\n'
     +(latestWeight?'CURRENT WEIGHT: '+latestWeight+'lbs (started at '+STARTING_WEIGHT+'lbs, lost '+(STARTING_WEIGHT-latestWeight).toFixed(1)+'lbs)\n\n':'')
     +'MEALS LOGGED ('+state.meals.length+'):\n'+(mealLines||'  No meals logged')+'\n\n'
     +'TOTALS:\n  Protein: '+tp+'g / 140g goal\n  Calories: '+tc+'\n  Water: '+state.waterOz+'oz / 80oz goal\n'
@@ -628,11 +628,7 @@ function buildWeightChart(weights, range) {
   if (range === '8w') { var cutoff = new Date(); cutoff.setDate(cutoff.getDate()-56); filtered = weights.filter(function(w){ return new Date(w.date+'T12:00:00') >= cutoff; }); }
   else if (range === '4w') { var cutoff2 = new Date(); cutoff2.setDate(cutoff2.getDate()-28); filtered = weights.filter(function(w){ return new Date(w.date+'T12:00:00') >= cutoff2; }); }
   if (filtered.length === 0) filtered = weights.slice(-5);
-  // Include starting weight as first point if not already there
   var allPoints = filtered;
-  if (new Date(STARTING_DATE+'T12:00:00') < new Date(allPoints[0].date+'T12:00:00')) {
-    allPoints = [{ date: STARTING_DATE, weight_lbs: STARTING_WEIGHT }].concat(allPoints);
-  }
   var vals = allPoints.map(function(w){ return w.weight_lbs; });
   var goalVals = WEIGHT_GOALS.map(function(g){ return g.val; });
   var minW = Math.min.apply(null, vals.concat(goalVals)) - 5;
@@ -685,7 +681,7 @@ function buildWeightChart(weights, range) {
 
 // ─── BADGE LOGIC ─────────────────────────────────────────────────────────────
 function buildBadgeText() {
-  var weeks = weeksSinceStart() + 1;
+  var weeks = weeksSinceStart();
   var dose = DOSE_SEQUENCE[state.currentDoseIndex];
   var isDoseDay = isTuesday();
   return (isDoseDay ? '💉 DOSE DAY · ' : '') + 'WEEK ' + weeks + ' · ' + dose + 'mg';
@@ -821,7 +817,7 @@ function render() {
   else if (state.activeTab==='dose') {
     var currentDose = DOSE_SEQUENCE[state.currentDoseIndex];
     var nextDose = state.currentDoseIndex < DOSE_SEQUENCE.length-1 ? DOSE_SEQUENCE[state.currentDoseIndex+1] : null;
-    var weeks = weeksSinceStart()+1;
+    var weeks = weeksSinceStart();
     // dose progress dots
     var dotsHtml = '';
     DOSE_SEQUENCE.forEach(function(dose, i) {
