@@ -11,7 +11,7 @@
   --purple:#7c4dff;--purple-light:#ede7ff;--purple-mid:#b39ddb;
   --text:#2d1f5e;--text2:#6b5b9a;--text3:#9e8ec4;
   --green:#43a047;--green-bg:#e8f5e9;--yellow:#f9a825;--yellow-bg:#fffde7;
-  --red:#e53935;--red-bg:#ffebee;--blue:#1e88e5;
+  --red:#e53935;--red-bg:#ffebee;--blue:#1e88e5;--blue-bg:#e3f2fd;
   --r:14px;--rs:8px;--shadow:0 2px 12px rgba(124,77,255,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -20,6 +20,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .header-inner{max-width:540px;margin:0 auto;}
 .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
 .badge{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--purple);background:var(--purple-light);padding:3px 8px;border-radius:20px;margin-bottom:5px;display:inline-block;}
+.badge.dose-day{color:#fff;background:linear-gradient(90deg,#7c4dff,#b39ddb);animation:pulse-badge 2s infinite;}
+@keyframes pulse-badge{0%,100%{box-shadow:0 0 0 0 rgba(124,77,255,.4);}50%{box-shadow:0 0 0 6px rgba(124,77,255,0);}}
 .header-title{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-.5px;}
 .header-sub{display:flex;align-items:center;gap:8px;margin-top:3px;}
 .header-date{font-size:12px;color:var(--text3);}
@@ -36,8 +38,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .pright{font-family:'DM Mono',monospace;font-size:10px;}
 .progress-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
 .progress-fill{height:100%;border-radius:3px;transition:width .5s ease;}
-.tabs{max-width:540px;margin:0 auto;display:flex;border-bottom:1px solid var(--border);padding:0 16px;margin-top:4px;}
-.tab{flex:1;padding:11px 0;background:none;border:none;border-bottom:2px solid transparent;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);cursor:pointer;transition:all .2s;margin-bottom:-1px;}
+.tabs{max-width:540px;margin:0 auto;display:flex;border-bottom:1px solid var(--border);padding:0 16px;margin-top:4px;overflow-x:auto;}
+.tab{flex:1;padding:11px 0;background:none;border:none;border-bottom:2px solid transparent;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;transition:all .2s;margin-bottom:-1px;white-space:nowrap;min-width:52px;}
 .tab.active{color:var(--purple);border-bottom-color:var(--purple);}
 .main{max-width:540px;margin:0 auto;padding:16px 16px 100px;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);margin-bottom:10px;}
@@ -54,8 +56,13 @@ textarea::placeholder{color:var(--text3);}
 .empty-icon{font-size:36px;margin-bottom:12px;}
 .empty-text{font-size:14px;color:var(--text2);margin-bottom:6px;}
 .empty-sub{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);}
-.meal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow);position:relative;}
+.meal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow);position:relative;transition:all .2s;}
 .meal-card.unrecognized{border-color:#ffe0b2;background:#fffbf5;}
+.meal-card.merge-mode{cursor:pointer;padding-left:44px;}
+.meal-card.merge-selected{border-color:var(--purple);background:var(--purple-light);box-shadow:0 0 0 2px rgba(124,77,255,.2);}
+.merge-checkbox{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;border:2px solid var(--border2);border-radius:5px;background:var(--surface);display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.merge-checkbox.checked{background:var(--purple);border-color:var(--purple);}
+.merge-checkbox.checked::after{content:'✓';color:#fff;font-size:12px;}
 .meal-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center;}
 .meal-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--purple);background:var(--purple-light);padding:2px 7px;border-radius:10px;}
 .meal-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
@@ -71,6 +78,14 @@ textarea::placeholder{color:var(--text3);}
 .meal-note{margin-top:8px;font-size:12px;color:var(--text2);font-style:italic;line-height:1.5;border-left:2px solid var(--border2);padding-left:10px;}
 .del-btn{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:4px;transition:all .15s;}
 .del-btn:hover{color:var(--red);background:var(--red-bg);}
+.merge-bar{background:var(--purple-light);border:1px solid var(--border2);border-radius:var(--rs);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.merge-bar-text{font-family:'DM Mono',monospace;font-size:11px;color:var(--purple);}
+.merge-bar-actions{display:flex;gap:8px;}
+.merge-confirm{background:var(--purple);border:none;border-radius:6px;padding:6px 14px;color:#fff;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;}
+.merge-confirm:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed;}
+.merge-cancel{background:none;border:1px solid var(--border2);border-radius:6px;padding:6px 14px;color:var(--text2);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;}
+.merge-trigger{background:none;border:1px solid var(--border2);border-radius:6px;padding:6px 12px;color:var(--text2);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .15s;margin-bottom:10px;}
+.merge-trigger:hover{border-color:var(--purple);color:var(--purple);}
 .totals-bar{background:var(--purple-light);border:1px solid var(--border2);border-radius:var(--r);padding:14px;display:flex;justify-content:space-between;margin-bottom:10px;}
 .total-item{text-align:center;}
 .total-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;}
@@ -131,6 +146,7 @@ textarea::placeholder{color:var(--text3);}
 .hbar{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;}
 .hbar-fill{height:100%;border-radius:2px;transition:width .5s ease;}
 .hday-note{margin-top:7px;font-size:11px;color:var(--text3);font-style:italic;}
+.hday-se{margin-top:5px;font-family:'DM Mono',monospace;font-size:10px;color:var(--red);background:var(--red-bg);padding:3px 8px;border-radius:8px;display:inline-block;}
 .err-banner{background:var(--red-bg);border-bottom:1px solid #ffcdd2;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;}
 .err-text{font-family:'DM Mono',monospace;font-size:11px;color:var(--red);}
 .err-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;}
@@ -138,6 +154,79 @@ textarea::placeholder{color:var(--text3);}
 .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .loading-text{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);letter-spacing:2px;}
+
+/* Side Effects */
+.se-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.se-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--purple);text-transform:uppercase;flex-shrink:0;}
+.toggle-row{display:flex;gap:8px;}
+.toggle-opt{font-family:'DM Mono',monospace;font-size:10px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);cursor:pointer;transition:all .15s;background:var(--surface);}
+.toggle-opt.active-no{background:var(--green-bg);border-color:#a5d6a7;color:var(--green);}
+.toggle-opt.active-yes{background:var(--red-bg);border-color:#ef9a9a;color:var(--red);}
+.se-text{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color .2s;margin-top:8px;}
+.se-text:focus{border-color:var(--red);}
+
+/* Dose tab */
+.dose-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;box-shadow:var(--shadow);}
+.dose-current{text-align:center;padding:20px 0 16px;}
+.dose-big{font-family:'DM Mono',monospace;font-size:52px;font-weight:500;color:var(--purple);line-height:1;}
+.dose-unit{font-family:'DM Mono',monospace;font-size:16px;color:var(--text3);}
+.dose-week{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);letter-spacing:2px;margin-top:4px;}
+.dose-next{font-size:13px;color:var(--text2);margin-top:6px;}
+.dose-progress{display:flex;justify-content:space-between;margin:16px 0 12px;}
+.dose-step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.dose-dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--border2);background:var(--surface2);font-family:'DM Mono',monospace;font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .3s;}
+.dose-dot.done{background:var(--purple);border-color:var(--purple);color:#fff;}
+.dose-dot.current{background:#fff;border-color:var(--purple);color:var(--purple);box-shadow:0 0 0 3px rgba(124,77,255,.2);}
+.dose-step-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);}
+.dose-connector{flex:1;height:2px;background:var(--border2);margin-top:11px;align-self:flex-start;}
+.dose-connector.done{background:var(--purple);}
+.dose-actions{display:flex;gap:8px;margin-top:12px;}
+.dose-advance{flex:1;background:var(--purple);border:none;border-radius:var(--rs);padding:12px;color:#fff;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(124,77,255,.3);}
+.dose-advance:disabled{background:var(--border2);color:var(--text3);box-shadow:none;cursor:not-allowed;}
+.dose-revert{flex:1;background:none;border:1px solid var(--border2);border-radius:var(--rs);padding:12px;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s;}
+.dose-revert:disabled{color:var(--text3);border-color:var(--border);cursor:not-allowed;}
+.dose-log-section{margin-top:14px;}
+.dose-log-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.dose-log-item:last-child{border-bottom:none;}
+.dlog-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);}
+.dlog-dose{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--purple);}
+.dlog-week{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
+.dose-log-btn{background:linear-gradient(135deg,var(--purple-light),#ddd6fe);border:1px solid var(--border2);border-radius:var(--r);padding:14px;color:var(--purple);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;box-shadow:var(--shadow);width:100%;margin-top:12px;}
+.dose-log-btn:hover{background:linear-gradient(135deg,#ddd6fe,#c4b5fd);}
+
+/* Weight tab */
+.weight-hero{text-align:center;padding:16px 0 20px;}
+.weight-current{font-family:'DM Mono',monospace;font-size:52px;font-weight:500;color:var(--text);line-height:1;}
+.weight-unit{font-family:'DM Mono',monospace;font-size:16px;color:var(--text3);}
+.weight-lost{font-family:'DM Mono',monospace;font-size:14px;color:var(--green);margin-top:8px;}
+.weight-goals{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.wgoal{flex:1;min-width:80px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:10px 8px;text-align:center;box-shadow:var(--shadow);}
+.wgoal.reached{border-color:var(--green);background:var(--green-bg);}
+.wgoal-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;}
+.wgoal-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px;}
+.wgoal-remain{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);margin-top:3px;}
+.wgoal.reached .wgoal-remain{color:var(--green);}
+.weight-log-row{display:flex;gap:8px;margin-bottom:14px;align-items:flex-end;}
+.weight-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rs);padding:10px 12px;color:var(--text);font-size:16px;font-family:'DM Mono',monospace;outline:none;transition:border-color .2s;}
+.weight-input:focus{border-color:var(--purple-mid);}
+.weight-log-btn{background:var(--purple);border:none;border-radius:var(--rs);padding:10px 20px;color:#fff;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;box-shadow:0 2px 8px rgba(124,77,255,.3);}
+.weight-date-input{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;color:var(--text2);font-size:12px;font-family:'DM Mono',monospace;outline:none;width:130px;}
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px;box-shadow:var(--shadow);}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.chart-filters{display:flex;gap:4px;}
+.chart-filter{font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer;}
+.chart-filter.active{background:var(--purple);border-color:var(--purple);color:#fff;}
+.chart-area{width:100%;overflow-x:auto;}
+.weight-history-list{margin-top:12px;}
+.weight-entry{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
+.weight-entry:last-child{border-bottom:none;}
+.we-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);}
+.we-val{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;}
+.we-delta{font-family:'DM Mono',monospace;font-size:11px;}
+.we-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 4px;border-radius:3px;}
+.we-del:hover{color:var(--red);}
+
+.section-divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
 </style>
 </head>
 <body>
@@ -147,35 +236,84 @@ var SUPABASE_URL = 'https://yokazfpgbjotdggkyumg.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_g4Sy3-7Mrq3JXk7C5WJ2WA_SI7rhub8';
 var PROTEIN_GOAL = 140;
 var WATER_GOAL = 80;
+var STARTING_WEIGHT = 282;
+var STARTING_DATE = '2025-04-17';
+var WEIGHT_GOALS = [
+  { val: 250, label: 'Goal 1', celebrate: '🎉 First milestone!' },
+  { val: 225, label: 'Goal 2', celebrate: '🔥 Amazing progress!' },
+  { val: 200, label: 'Goal 3', celebrate: '⭐ Life-changing!' },
+  { val: 190, label: 'Goal 4', celebrate: '🏆 You did it!' }
+];
+var DOSE_SEQUENCE = [2.5, 5, 7.5, 10, 12.5, 15];
+var DOSE_START_DATE = '2025-04-17'; // first injection date (adjust if needed)
+var INJECTION_DAY = 2; // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
 
 function todayISO() { var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function isTuesday() { return new Date().getDay() === INJECTION_DAY; }
 
-function sbHeaders() {
-  return { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' };
+function weeksSinceStart() {
+  var start = new Date(DOSE_START_DATE + 'T12:00:00');
+  var now = new Date();
+  return Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000));
 }
+
+function sbHeaders() { return { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' }; }
 
 async function sbGet(date) {
   var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_days?date=eq.' + date + '&select=*', { headers: sbHeaders() });
   if (!res.ok) throw new Error('GET ' + res.status);
-  var rows = await res.json();
-  return rows.length > 0 ? rows[0] : null;
+  var rows = await res.json(); return rows.length > 0 ? rows[0] : null;
 }
-
 async function sbUpsert(data) {
   var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_days?on_conflict=date', {
-    method: 'POST',
-    headers: Object.assign({}, sbHeaders(), { 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
-    body: JSON.stringify(data)
+    method: 'POST', headers: Object.assign({}, sbHeaders(), { 'Prefer': 'resolution=merge-duplicates,return=minimal' }), body: JSON.stringify(data)
   });
   if (!res.ok) { var t = await res.text(); throw new Error('UPSERT ' + res.status + ': ' + t); }
 }
-
 async function sbHistory() {
-  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_days?select=*&order=date.desc&limit=30', { headers: sbHeaders() });
+  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_days?select=*&order=date.desc&limit=60', { headers: sbHeaders() });
   if (!res.ok) throw new Error('HISTORY ' + res.status);
   return res.json();
 }
+async function sbGetSettings() {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_settings?id=eq.1&select=*', { headers: sbHeaders() });
+  if (!res.ok) return null;
+  var rows = await res.json(); return rows.length > 0 ? rows[0] : null;
+}
+async function sbSaveSettings(data) {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_settings?on_conflict=id', {
+    method: 'POST', headers: Object.assign({}, sbHeaders(), { 'Prefer': 'resolution=merge-duplicates,return=minimal' }), body: JSON.stringify(Object.assign({ id: 1 }, data))
+  });
+  if (!res.ok) { var t = await res.text(); throw new Error('SETTINGS ' + res.status + ': ' + t); }
+}
+async function sbGetWeights() {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_weights?select=*&order=date.asc', { headers: sbHeaders() });
+  if (!res.ok) return [];
+  return res.json();
+}
+async function sbUpsertWeight(data) {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_weights?on_conflict=date', {
+    method: 'POST', headers: Object.assign({}, sbHeaders(), { 'Prefer': 'resolution=merge-duplicates,return=minimal' }), body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('WEIGHT ' + res.status);
+}
+async function sbDeleteWeight(date) {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_weights?date=eq.' + date, { method: 'DELETE', headers: sbHeaders() });
+  if (!res.ok) throw new Error('DEL WEIGHT ' + res.status);
+}
+async function sbGetDoseLog() {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_dose_log?select=*&order=date.desc', { headers: sbHeaders() });
+  if (!res.ok) return [];
+  return res.json();
+}
+async function sbLogDose(data) {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/zepbound_dose_log', {
+    method: 'POST', headers: Object.assign({}, sbHeaders(), { 'Prefer': 'return=minimal' }), body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('DOSE LOG ' + res.status);
+}
 
+// ─── FOOD DATABASE ───────────────────────────────────────────────────────────
 var FOODS = [
   { keys: ['fage 0','fage plain','fage'], p:18, c:90, label:'Fage 0% Greek yogurt', group:'yogurt' },
   { keys: ['chobani plain','plain greek yogurt','plain nonfat greek'], p:17, c:100, label:'Plain Greek yogurt', group:'yogurt' },
@@ -258,6 +396,7 @@ var FOODS = [
   { keys: ['mixed berries','berries'], p:1, c:35, label:'Mixed berries', group:'berries' },
   { keys: ['oatmeal','oats','overnight oats'], p:6, c:160, label:'Oatmeal', group:'grains' },
   { keys: ['granola'], p:4, c:200, label:'Granola', group:'granola' },
+  { keys: ['toast','bread'], p:3, c:80, label:'Toast/bread', group:'bread' },
   { keys: ['brown rice'], p:4, c:216, label:'Brown rice', group:'rice' },
   { keys: ['rice'], p:4, c:200, label:'Rice', group:'rice' },
   { keys: ['quinoa'], p:8, c:222, label:'Quinoa', group:'rice' },
@@ -275,13 +414,9 @@ var FOODS = [
 
 function estimateMeal(text) {
   var lower = text.toLowerCase();
-  var matched = [];
-  var usedGroups = {};
-  var usedLabels = {};
-  var blockedGroups = {};
+  var matched = [], usedGroups = {}, usedLabels = {}, blockedGroups = {};
   var sorted = FOODS.slice().sort(function(a,b) {
-    return Math.max.apply(null, b.keys.map(function(k){return k.length;})) -
-           Math.max.apply(null, a.keys.map(function(k){return k.length;}));
+    return Math.max.apply(null, b.keys.map(function(k){return k.length;})) - Math.max.apply(null, a.keys.map(function(k){return k.length;}));
   });
   for (var i = 0; i < sorted.length; i++) {
     var food = sorted[i];
@@ -291,8 +426,7 @@ function estimateMeal(text) {
       if (usedLabels[food.label]) continue;
       if (food.group && usedGroups[food.group]) continue;
       if (food.group && blockedGroups[food.group]) continue;
-      matched.push(food);
-      usedLabels[food.label] = true;
+      matched.push(food); usedLabels[food.label] = true;
       if (food.group) usedGroups[food.group] = true;
       if (food.blocks) { food.blocks.forEach(function(b){ blockedGroups[b] = true; }); }
       break;
@@ -300,14 +434,12 @@ function estimateMeal(text) {
   }
   var tp = 0, tc = 0;
   matched.forEach(function(food) {
-    var mult = 1;
-    var idx = lower.indexOf(food.keys[0]);
+    var mult = 1, idx = lower.indexOf(food.keys[0]);
     var ctx = lower.slice(Math.max(0,idx-25), idx+25);
     if (/\btwo\b|2x/.test(ctx)) mult = 2;
     else if (/\bhalf\b/.test(ctx)) mult = 0.5;
     else if (/\bthree\b|3x/.test(ctx)) mult = 3;
-    tp += Math.round(food.p * mult);
-    tc += Math.round(food.c * mult);
+    tp += Math.round(food.p * mult); tc += Math.round(food.c * mult);
   });
   var note = matched.length === 0 ? 'Food not in database - tap the protein number to edit manually.'
     : tp >= 40 ? tp + 'g protein is a strong meal - exactly the Zepbound approach.'
@@ -320,82 +452,143 @@ function estimateMeal(text) {
 function pColor(pct) { return pct >= 80 ? '#43a047' : pct >= 50 ? '#f9a825' : '#e53935'; }
 function wColor(pct) { return pct >= 80 ? '#1e88e5' : pct >= 50 ? '#42a5f5' : '#e53935'; }
 
+// ─── STATE ────────────────────────────────────────────────────────────────────
 var state = {
-  meals:[], waterOz:0, dayNote:'', activeTab:'log',
-  history:[], loading:true, saveStatus:null, dbError:null,
-  feedback:null, feedbackLoading:false, input:'',
-  saveTimer:null, ready:false
+  meals:[], waterOz:0, dayNote:'', sideEffects:false, sideEffectsNote:'',
+  activeTab:'log', history:[], loading:true, saveStatus:null, dbError:null,
+  feedback:null, feedbackLoading:false, input:'', saveTimer:null, ready:false,
+  mergeMode:false, mergeSelected:[],
+  // dose
+  currentDoseIndex:0, doseLog:[],
+  // weight
+  weights:[], weightInput:'', weightDateInput:todayISO(), weightChartRange:'all',
 };
 
 function setState(updates) { Object.assign(state, updates); render(); }
-
 function scheduleSave() {
   if (!state.ready) return;
   if (state.saveTimer) clearTimeout(state.saveTimer);
   state.saveTimer = setTimeout(doSave, 1000);
 }
-
 async function doSave() {
   setState({ saveStatus:'saving' });
   try {
     var tp = state.meals.reduce(function(s,m){return s+m.protein;},0);
     var tc = state.meals.reduce(function(s,m){return s+m.calories;},0);
-    await sbUpsert({ date:todayISO(), meals:state.meals, water_oz:state.waterOz, day_note:state.dayNote, total_protein:tp, total_calories:tc, updated_at:new Date().toISOString() });
+    await sbUpsert({ date:todayISO(), meals:state.meals, water_oz:state.waterOz, day_note:state.dayNote, side_effects:state.sideEffects, side_effects_note:state.sideEffectsNote, total_protein:tp, total_calories:tc, updated_at:new Date().toISOString() });
     var hist = await sbHistory();
     setState({ saveStatus:'saved', history:hist||[] });
     setTimeout(function(){ setState({ saveStatus:null }); }, 2000);
-  } catch(e) {
-    setState({ saveStatus:'error', dbError:'Save failed: ' + e.message });
-  }
+  } catch(e) { setState({ saveStatus:'error', dbError:'Save failed: ' + e.message }); }
+}
+async function saveSettings() {
+  try { await sbSaveSettings({ current_dose_index: state.currentDoseIndex }); } catch(e) {}
 }
 
 async function init() {
   try {
-    var results = await Promise.all([sbGet(todayISO()), sbHistory()]);
-    var row = results[0], hist = results[1];
+    var results = await Promise.all([sbGet(todayISO()), sbHistory(), sbGetSettings(), sbGetWeights(), sbGetDoseLog()]);
+    var row=results[0], hist=results[1], settings=results[2], weights=results[3], doseLog=results[4];
     if (row) {
       state.meals = row.meals || [];
       state.waterOz = row.water_oz || 0;
       state.dayNote = row.day_note || '';
+      state.sideEffects = row.side_effects || false;
+      state.sideEffectsNote = row.side_effects_note || '';
     }
-    state.history = hist||[];
-  } catch(e) {
-    state.dbError = 'Could not load data: ' + e.message;
-  }
-  state.loading = false;
-  state.ready = true;
-  render();
+    state.history = hist || [];
+    state.weights = weights || [];
+    state.doseLog = doseLog || [];
+    if (settings && settings.current_dose_index != null) {
+      state.currentDoseIndex = settings.current_dose_index;
+    }
+  } catch(e) { state.dbError = 'Could not load data: ' + e.message; }
+  state.loading = false; state.ready = true; render();
 }
 
+// ─── ACTIONS ─────────────────────────────────────────────────────────────────
 function logMeal() {
-  var txt = state.input.trim();
-  if (!txt) return;
+  var txt = state.input.trim(); if (!txt) return;
   var est = estimateMeal(txt);
-  state.meals = state.meals.concat([{
-    id: Date.now(), description: txt, items: est.items,
-    protein: est.protein, calories: est.calories, notes: est.notes,
-    recognized: est.recognized,
-    time: new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
-  }]);
-  state.input = '';
-  state.feedback = null;
-  scheduleSave();
-  render();
+  state.meals = state.meals.concat([{ id:Date.now(), description:txt, items:est.items, protein:est.protein, calories:est.calories, notes:est.notes, recognized:est.recognized, time:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) }]);
+  state.input = ''; state.feedback = null; scheduleSave(); render();
   setTimeout(function(){ var ta=document.getElementById('meal-input'); if(ta) ta.focus(); }, 50);
 }
-
-function deleteMeal(id) {
-  state.meals = state.meals.filter(function(m){return m.id!==id;});
-  state.feedback = null;
-  scheduleSave(); render();
-}
-
+function deleteMeal(id) { state.meals = state.meals.filter(function(m){return m.id!==id;}); state.feedback=null; scheduleSave(); render(); }
 function updateMealVal(id, field, val) {
   state.meals = state.meals.map(function(m){ return m.id===id ? Object.assign({},m,JSON.parse('{"'+field+'":'+( parseInt(val)||0)+'}')) : m; });
   scheduleSave(); render();
 }
-
 function addWater(oz) { state.waterOz = Math.min(state.waterOz+oz,120); scheduleSave(); render(); }
+
+function toggleMergeMode() {
+  state.mergeMode = !state.mergeMode;
+  state.mergeSelected = [];
+  render();
+}
+function toggleMergeSelect(id) {
+  if (state.mergeSelected.indexOf(id) >= 0) {
+    state.mergeSelected = state.mergeSelected.filter(function(x){ return x !== id; });
+  } else {
+    state.mergeSelected = state.mergeSelected.concat([id]);
+  }
+  render();
+}
+function confirmMerge() {
+  if (state.mergeSelected.length < 2) return;
+  var selected = state.meals.filter(function(m){ return state.mergeSelected.indexOf(m.id) >= 0; });
+  var remaining = state.meals.filter(function(m){ return state.mergeSelected.indexOf(m.id) < 0; });
+  var desc = selected.map(function(m){ return m.description; }).join(' + ');
+  var items = [];
+  selected.forEach(function(m){ m.items.forEach(function(it){ if (items.indexOf(it)<0) items.push(it); }); });
+  var totalP = selected.reduce(function(s,m){ return s+m.protein; }, 0);
+  var totalC = selected.reduce(function(s,m){ return s+m.calories; }, 0);
+  var firstTime = selected[0].time;
+  var merged = { id:Date.now(), description:desc, items:items, protein:totalP, calories:totalC, notes:totalP+'g combined protein from '+selected.length+' items merged.', recognized:true, time:firstTime, merged:true };
+  // insert at position of first selected meal
+  var firstIdx = state.meals.findIndex(function(m){ return m.id === state.mergeSelected[0]; });
+  var newMeals = remaining.slice();
+  newMeals.splice(firstIdx, 0, merged);
+  state.meals = newMeals;
+  state.mergeMode = false; state.mergeSelected = [];
+  scheduleSave(); render();
+}
+
+function advanceDose() {
+  if (state.currentDoseIndex >= DOSE_SEQUENCE.length - 1) return;
+  state.currentDoseIndex++;
+  saveSettings();
+  var logEntry = { date: todayISO(), dose_mg: DOSE_SEQUENCE[state.currentDoseIndex], week: weeksSinceStart() + 1 };
+  sbLogDose(logEntry).then(function(){
+    return sbGetDoseLog();
+  }).then(function(log){ state.doseLog = log || []; render(); }).catch(function(){});
+  render();
+}
+function revertDose() {
+  if (state.currentDoseIndex <= 0) return;
+  state.currentDoseIndex--;
+  saveSettings(); render();
+}
+function logDoseToday() {
+  var logEntry = { date: todayISO(), dose_mg: DOSE_SEQUENCE[state.currentDoseIndex], week: weeksSinceStart() + 1 };
+  sbLogDose(logEntry).then(function(){
+    return sbGetDoseLog();
+  }).then(function(log){ state.doseLog = log || []; render(); }).catch(function(){});
+}
+
+function logWeight() {
+  var val = parseFloat(state.weightInput);
+  if (!val || val < 50 || val > 600) return;
+  var date = state.weightDateInput || todayISO();
+  sbUpsertWeight({ date: date, weight_lbs: val }).then(function(){
+    return sbGetWeights();
+  }).then(function(w){ state.weights = w || []; state.weightInput = ''; render(); }).catch(function(e){ state.dbError = 'Weight save failed: ' + e.message; render(); });
+}
+function deleteWeight(date) {
+  sbDeleteWeight(date).then(function(){
+    return sbGetWeights();
+  }).then(function(w){ state.weights = w || []; render(); }).catch(function(){});
+}
 
 function generateFeedback() {
   setState({ feedbackLoading:true });
@@ -403,52 +596,113 @@ function generateFeedback() {
     var tp=state.meals.reduce(function(s,m){return s+m.protein;},0);
     var tw=state.waterOz;
     var pp=(tp/PROTEIN_GOAL)*100, wp=(tw/WATER_GOAL)*100;
-    var fb = pp>=95 ? 'Outstanding - '+tp+'g protein hits the goal. '
-      : pp>=75 ? 'Good day at '+tp+'g protein, '+(PROTEIN_GOAL-tp)+'g short of goal. '
-      : pp>=50 ? tp+'g protein is a start - push harder at remaining meals. '
-      : 'Only '+tp+'g protein - lean on Greek yogurt, cottage cheese, or a Fairlife shake. ';
-    fb += wp>=90 ? 'Hydration excellent at '+tw+'oz. '
-      : wp>=60 ? 'Water at '+tw+'oz - keep sipping toward '+WATER_GOAL+'oz. '
-      : 'Water low at '+tw+'oz - dehydration worsens Zepbound side effects. ';
-    fb += state.meals.length>=3 ? state.meals.length+' meals shows solid eating structure.'
-      : state.meals.length===2 ? 'Only 2 meals - consider a snack if your appetite allows.'
-      : 'Light logging today - make sure you are eating enough even when not hungry.';
+    var fb = pp>=95?'Outstanding - '+tp+'g protein hits the goal. ':pp>=75?'Good day at '+tp+'g protein, '+(PROTEIN_GOAL-tp)+'g short of goal. ':pp>=50?tp+'g protein is a start - push harder at remaining meals. ':'Only '+tp+'g protein - lean on Greek yogurt, cottage cheese, or a Fairlife shake. ';
+    fb += wp>=90?'Hydration excellent at '+tw+'oz. ':wp>=60?'Water at '+tw+'oz - keep sipping toward '+WATER_GOAL+'oz. ':'Water low at '+tw+'oz - dehydration worsens Zepbound side effects. ';
+    fb += state.meals.length>=3?state.meals.length+' meals shows solid eating structure.':state.meals.length===2?'Only 2 meals - consider a snack if your appetite allows.':'Light logging today - make sure you are eating enough even when not hungry.';
+    if (state.sideEffects && state.sideEffectsNote) fb += ' Side effects noted: "'+state.sideEffectsNote+'"';
     if (state.dayNote) fb += ' Note: "'+state.dayNote+'"';
     setState({ feedback:fb, feedbackLoading:false });
   }, 400);
 }
-
 function shareToClaude() {
   var tp=state.meals.reduce(function(s,m){return s+m.protein;},0);
   var tc=state.meals.reduce(function(s,m){return s+m.calories;},0);
   var date=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  var mealLines=state.meals.map(function(m,i){
-    return '  Meal '+(i+1)+' ('+m.time+'): '+m.description+' - '+m.protein+'g protein, '+m.calories+' cal';
-  }).join('\n');
+  var mealLines=state.meals.map(function(m,i){ return '  Meal '+(i+1)+' ('+m.time+'): '+m.description+' - '+m.protein+'g protein, '+m.calories+' cal'; }).join('\n');
+  var latestWeight = state.weights.length > 0 ? state.weights[state.weights.length-1].weight_lbs : null;
   var msg='Here is my Zepbound daily summary for '+date+':\n\n'
+    +'CURRENT DOSE: '+DOSE_SEQUENCE[state.currentDoseIndex]+'mg (Week '+(weeksSinceStart()+1)+')\n'
+    +(latestWeight?'CURRENT WEIGHT: '+latestWeight+'lbs (started at '+STARTING_WEIGHT+'lbs, lost '+(STARTING_WEIGHT-latestWeight).toFixed(1)+'lbs)\n\n':'')
     +'MEALS LOGGED ('+state.meals.length+'):\n'+(mealLines||'  No meals logged')+'\n\n'
     +'TOTALS:\n  Protein: '+tp+'g / 140g goal\n  Calories: '+tc+'\n  Water: '+state.waterOz+'oz / 80oz goal\n'
-    +(state.dayNote ? '\nDAY NOTES: '+state.dayNote+'\n' : '')
+    +(state.sideEffects?'\nSIDE EFFECTS: '+state.sideEffectsNote+'\n':'')
+    +(state.dayNote?'\nDAY NOTES: '+state.dayNote+'\n':'')
     +'\nPlease give me feedback on today, protein targets, and what to focus on tomorrow.';
   window.open('https://claude.ai/new?q='+encodeURIComponent(msg), '_blank');
 }
 
-function render() {
-  var app = document.getElementById('app');
-  if (!app) return;
-
-  if (state.loading) {
-    app.innerHTML = '<div class="loading"><div class="spinner"></div><div class="loading-text">LOADING YOUR DATA...</div></div>';
-    return;
+// ─── CHART RENDERING ─────────────────────────────────────────────────────────
+function buildWeightChart(weights, range) {
+  if (!weights || weights.length === 0) return '<div style="text-align:center;padding:40px;color:var(--text3);font-family:DM Mono,monospace;font-size:11px;">No weight data yet</div>';
+  var filtered = weights.slice();
+  if (range === '8w') { var cutoff = new Date(); cutoff.setDate(cutoff.getDate()-56); filtered = weights.filter(function(w){ return new Date(w.date+'T12:00:00') >= cutoff; }); }
+  else if (range === '4w') { var cutoff2 = new Date(); cutoff2.setDate(cutoff2.getDate()-28); filtered = weights.filter(function(w){ return new Date(w.date+'T12:00:00') >= cutoff2; }); }
+  if (filtered.length === 0) filtered = weights.slice(-5);
+  // Include starting weight as first point if not already there
+  var allPoints = filtered;
+  if (new Date(STARTING_DATE+'T12:00:00') < new Date(allPoints[0].date+'T12:00:00')) {
+    allPoints = [{ date: STARTING_DATE, weight_lbs: STARTING_WEIGHT }].concat(allPoints);
   }
+  var vals = allPoints.map(function(w){ return w.weight_lbs; });
+  var goalVals = WEIGHT_GOALS.map(function(g){ return g.val; });
+  var minW = Math.min.apply(null, vals.concat(goalVals)) - 5;
+  var maxW = Math.max.apply(null, vals.concat([STARTING_WEIGHT])) + 5;
+  var W = 460, H = 160, padL = 40, padR = 10, padT = 10, padB = 28;
+  var cW = W - padL - padR, cH = H - padT - padB;
+  function xPos(i) { return padL + (allPoints.length < 2 ? cW/2 : i / (allPoints.length-1) * cW); }
+  function yPos(v) { return padT + cH - ((v - minW) / (maxW - minW)) * cH; }
+  // build path
+  var pathD = allPoints.map(function(p,i){ return (i===0?'M':'L')+xPos(i)+','+yPos(p.weight_lbs); }).join(' ');
+  var areaD = pathD + ' L'+xPos(allPoints.length-1)+','+(padT+cH)+' L'+padL+','+(padT+cH)+' Z';
+  // goal lines
+  var goalLines = WEIGHT_GOALS.map(function(g) {
+    if (g.val < minW || g.val > maxW) return '';
+    var y = yPos(g.val);
+    var reached = vals[vals.length-1] <= g.val;
+    var color = reached ? '#43a047' : '#b39ddb';
+    return '<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="'+color+'" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>'
+      +'<text x="'+(W-padR-2)+'" y="'+(y-3)+'" text-anchor="end" font-family="DM Mono,monospace" font-size="8" fill="'+color+'">'+g.val+'</text>';
+  }).join('');
+  // y-axis labels
+  var yLabels = '';
+  for (var v = Math.ceil(minW/10)*10; v <= maxW; v+=10) {
+    var y = yPos(v);
+    yLabels += '<text x="'+(padL-4)+'" y="'+(y+3)+'" text-anchor="end" font-family="DM Mono,monospace" font-size="8" fill="#9e8ec4">'+v+'</text>';
+  }
+  // dots
+  var dots = allPoints.map(function(p,i){
+    var cx=xPos(i), cy=yPos(p.weight_lbs);
+    return '<circle cx="'+cx+'" cy="'+cy+'" r="3.5" fill="#7c4dff" stroke="#fff" stroke-width="1.5"/>';
+  }).join('');
+  // x labels (show first, last, and evenly spaced)
+  var xLabels = '';
+  var showEvery = Math.max(1, Math.floor(allPoints.length / 4));
+  allPoints.forEach(function(p,i){
+    if (i===0 || i===allPoints.length-1 || i%showEvery===0) {
+      var d = new Date(p.date+'T12:00:00');
+      var label = (d.getMonth()+1)+'/'+(d.getDate());
+      xLabels += '<text x="'+xPos(i)+'" y="'+(H-4)+'" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="#9e8ec4">'+label+'</text>';
+    }
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">'
+    +'<defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c4dff" stop-opacity="0.2"/><stop offset="100%" stop-color="#7c4dff" stop-opacity="0"/></linearGradient></defs>'
+    +'<path d="'+areaD+'" fill="url(#wg)"/>'
+    +goalLines + yLabels + xLabels
+    +'<path d="'+pathD+'" fill="none" stroke="#7c4dff" stroke-width="2" stroke-linejoin="round"/>'
+    +dots
+    +'</svg>';
+}
+
+// ─── BADGE LOGIC ─────────────────────────────────────────────────────────────
+function buildBadgeText() {
+  var weeks = weeksSinceStart() + 1;
+  var dose = DOSE_SEQUENCE[state.currentDoseIndex];
+  var isDoseDay = isTuesday();
+  return (isDoseDay ? '💉 DOSE DAY · ' : '') + 'WEEK ' + weeks + ' · ' + dose + 'mg';
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  var app = document.getElementById('app'); if (!app) return;
+  if (state.loading) { app.innerHTML='<div class="loading"><div class="spinner"></div><div class="loading-text">LOADING YOUR DATA...</div></div>'; return; }
 
   var tp=state.meals.reduce(function(s,m){return s+m.protein;},0);
   var tc=state.meals.reduce(function(s,m){return s+m.calories;},0);
-  var protPct=Math.min((tp/PROTEIN_GOAL)*100,100);
-  var watPct=Math.min((state.waterOz/WATER_GOAL)*100,100);
+  var protPct=Math.min((tp/PROTEIN_GOAL)*100,100), watPct=Math.min((state.waterOz/WATER_GOAL)*100,100);
   var pc=pColor(protPct), wc=wColor(watPct);
   var protRem=Math.max(PROTEIN_GOAL-tp,0), watRem=Math.max(WATER_GOAL-state.waterOz,0);
   var today=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  var isDoseDay = isTuesday();
 
   var syncEl='';
   if (state.saveStatus==='saved') syncEl='<span class="sync sync-ok">SYNCED</span>';
@@ -456,27 +710,45 @@ function render() {
   else if (state.saveStatus==='error') syncEl='<span class="sync sync-err">SYNC ERROR</span>';
 
   var errEl='';
-  if (state.dbError) errEl='<div class="err-banner"><span class="err-text">! '+state.dbError+'</span><button class="err-close" onclick="clearErr()">x</button></div>';
+  if (state.dbError) errEl='<div class="err-banner"><span class="err-text">! '+state.dbError+'</span><button class="err-close" onclick="clearErr()">✕</button></div>';
 
   var tabContent='';
 
+  // ── LOG TAB ────────────────────────────────────────────────────────────────
   if (state.activeTab==='log') {
     var mealCards='';
     if (state.meals.length===0) {
-      mealCards='<div class="empty"><div class="empty-icon">&#x1F957;</div><div class="empty-text">No meals logged yet today.</div><div class="empty-sub">Syncs across all your devices automatically</div></div>';
+      mealCards='<div class="empty"><div class="empty-icon">🥗</div><div class="empty-text">No meals logged yet today.</div><div class="empty-sub">Syncs across all your devices automatically</div></div>';
     } else {
+      var mergeBar='';
+      if (state.mergeMode) {
+        var count = state.mergeSelected.length;
+        mergeBar='<div class="merge-bar">'
+          +'<span class="merge-bar-text">'+(count < 2 ? 'Select 2+ meals to merge' : count+' selected')+'</span>'
+          +'<div class="merge-bar-actions">'
+          +'<button class="merge-confirm" onclick="confirmMerge()" '+(count<2?'disabled':'')+'>MERGE</button>'
+          +'<button class="merge-cancel" onclick="toggleMergeMode()">CANCEL</button>'
+          +'</div></div>';
+      } else {
+        mergeBar='<button class="merge-trigger" onclick="toggleMergeMode()">⊕ Merge Meals</button>';
+      }
+      mealCards = mergeBar;
       state.meals.forEach(function(meal,i) {
         var tags='';
         if (meal.recognized) tags=meal.items.map(function(it){return '<span class="meal-tag">'+it+'</span>';}).join('');
         var editBadge=!meal.recognized?'<span class="meal-edit-badge">Edit values</span>':'';
-        mealCards+='<div class="meal-card'+(meal.recognized?'':' unrecognized')+'">'
-          +'<button class="del-btn" onclick="delMeal('+meal.id+')">&#215;</button>'
-          +'<div class="meal-meta"><span class="meal-time">'+meal.time+'</span><span class="meal-num">Meal '+(i+1)+'</span>'+editBadge+'</div>'
+        var mergedBadge=meal.merged?'<span class="meal-edit-badge" style="background:#e8f5e9;color:#2e7d32">Merged</span>':'';
+        var isSelected = state.mergeSelected.indexOf(meal.id) >= 0;
+        var cbHtml = state.mergeMode ? '<div class="merge-checkbox'+(isSelected?' checked':'')+'" onclick="toggleMergeSelect('+meal.id+')"></div>' : '';
+        var cardClass = 'meal-card'+(meal.recognized?'':' unrecognized')+(state.mergeMode?' merge-mode':'')+(isSelected?' merge-selected':'');
+        mealCards+='<div class="'+cardClass+'"'+(state.mergeMode?' onclick="toggleMergeSelect('+meal.id+')"':'')+'>'+cbHtml
+          +(state.mergeMode?'':'<button class="del-btn" onclick="delMeal('+meal.id+')">✕</button>')
+          +'<div class="meal-meta"><span class="meal-time">'+meal.time+'</span><span class="meal-num">Meal '+(i+1)+'</span>'+editBadge+mergedBadge+'</div>'
           +'<div class="meal-desc">'+meal.description+'</div>'
           +(tags?'<div class="meal-tags">'+tags+'</div>':'')
           +'<div class="meal-values">'
-          +'<div class="val-group"><input class="val-input" type="number" value="'+meal.protein+'" style="color:'+pc+'" onchange="updMeal('+meal.id+',\'protein\',this.value)"><span class="val-label">g protein</span></div>'
-          +'<div class="val-group"><input class="val-input" type="number" value="'+meal.calories+'" style="color:#6b5b9a" onchange="updMeal('+meal.id+',\'calories\',this.value)"><span class="val-label">cal</span></div>'
+          +'<div class="val-group"><input class="val-input" type="number" value="'+meal.protein+'" style="color:'+pc+'" onchange="updMeal('+meal.id+',\'protein\',this.value)" '+(state.mergeMode?'onclick="event.stopPropagation()"':'')+' ><span class="val-label">g protein</span></div>'
+          +'<div class="val-group"><input class="val-input" type="number" value="'+meal.calories+'" style="color:#6b5b9a" onchange="updMeal('+meal.id+',\'calories\',this.value)" '+(state.mergeMode?'onclick="event.stopPropagation()"':'')+' ><span class="val-label">cal</span></div>'
           +'</div>'
           +(meal.notes?'<div class="meal-note">'+meal.notes+'</div>':'')
           +'</div>';
@@ -484,56 +756,49 @@ function render() {
       mealCards+='<div class="totals-bar">'
         +'<div class="total-item"><div class="total-val" style="color:'+pc+'">'+tp+'g</div><div class="total-label">PROTEIN</div></div>'
         +'<div class="total-item"><div class="total-val" style="color:#6b5b9a">'+tc+'</div><div class="total-label">CALORIES</div></div>'
-        +'<div class="total-item"><div class="total-val" style="color:'+(protRem>0?'#e53935':'#43a047')+'">'+(protRem>0?'-'+protRem+'g':'OK')+'</div><div class="total-label">REMAINING</div></div>'
+        +'<div class="total-item"><div class="total-val" style="color:'+(protRem>0?'#e53935':'#43a047')+'">'+(protRem>0?'-'+protRem+'g':'✓ OK')+'</div><div class="total-label">REMAINING</div></div>'
         +'</div>';
     }
     tabContent='<div style="margin-top:18px">'
       +'<label class="input-label">Describe what you ate</label>'
-      +'<div class="input-wrap">'
-      +'<textarea id="meal-input" rows="3" placeholder="e.g. Chobani plain Greek yogurt, one scoop Orgain, raspberries and a banana" onkeydown="handleKey(event)"></textarea>'
-      +'<button class="log-btn" onclick="logMeal()" id="log-btn">LOG</button>'
-      +'</div>'
-      +'<div class="input-hint">Enter to log - tap numbers to edit - syncs across all devices</div>'
-      +'</div>'
-      +'<div style="margin-top:16px">'+mealCards+'</div>';
+      +'<div class="input-wrap"><textarea id="meal-input" rows="3" placeholder="e.g. scrambled eggs and toast, then a banana" onkeydown="handleKey(event)"></textarea>'
+      +'<button class="log-btn" onclick="logMeal()" id="log-btn">LOG</button></div>'
+      +'<div class="input-hint">Enter to log · tap numbers to edit · syncs across devices</div>'
+      +'</div><div style="margin-top:16px">'+mealCards+'</div>';
   }
 
+  // ── WATER TAB ─────────────────────────────────────────────────────────────
   else if (state.activeTab==='water') {
     tabContent='<div style="margin-top:18px">'
-      +'<div class="water-center">'
-      +'<div class="water-big" style="color:'+wc+'">'+state.waterOz+'</div>'
-      +'<div class="water-sub">OZ OF '+WATER_GOAL+' GOAL</div>'
-      +'<div class="water-remain">'+(watRem>0?watRem+'oz remaining':'Daily goal reached')+'</div>'
-      +'</div>'
+      +'<div class="water-center"><div class="water-big" style="color:'+wc+'">'+state.waterOz+'</div><div class="water-sub">OZ OF '+WATER_GOAL+' GOAL</div><div class="water-remain">'+(watRem>0?watRem+'oz remaining':'Daily goal reached 💧')+'</div></div>'
       +'<div class="water-bottle"><div class="water-fill" style="height:'+watPct+'%;background:linear-gradient(180deg,'+wc+'66,'+wc+')"></div><div class="water-pct">'+Math.round(watPct)+'%</div></div>'
       +'<div class="qadd-label">QUICK ADD</div>'
       +'<div class="water-grid">'
       +[{l:'Sip',oz:4,d:'small'},{l:'Glass',oz:10,d:'~10oz'},{l:'Work Bottle',oz:25,d:'your 25oz'},{l:'Coffee',oz:12,d:'mug'},{l:'Pint',oz:16,d:'16oz'},{l:'32oz',oz:32,d:'large'}].map(function(b){
-        return '<button class="water-btn" onclick="addWater('+b.oz+')">'
-          +'<div class="wboz" style="color:'+wc+'">+'+b.oz+'</div>'
-          +'<div class="wblabel">'+b.l+'</div>'
-          +'<div class="wbdesc">'+b.d+'</div></button>';
-      }).join('')
-      +'</div>'
+        return '<button class="water-btn" onclick="addWater('+b.oz+')">'+'<div class="wboz" style="color:'+wc+'">+'+b.oz+'</div>'+'<div class="wblabel">'+b.l+'</div>'+'<div class="wbdesc">'+b.d+'</div></button>';
+      }).join('')+'</div>'
       +(state.waterOz>0?'<button class="reset-btn" onclick="resetWater()">RESET WATER</button>':'')
-      +'<div class="hyd-card"><div class="card-label">Hydration Notes</div>'
-      +'<div class="hyd-notes">Sip steadily, do not gulp large amounts<br>Drink between meals, not heavily during<br>Thirst cues are muted on Zepbound<br>Work bottle x2 + 2 home glasses = 80oz</div>'
-      +'</div></div>';
+      +'<div class="hyd-card"><div class="card-label">Hydration Notes</div><div class="hyd-notes">Sip steadily, do not gulp large amounts<br>Drink between meals, not heavily during<br>Thirst cues are muted on Zepbound<br>Work bottle x2 + 2 home glasses = 80oz</div></div></div>';
   }
 
+  // ── SUMMARY TAB ──────────────────────────────────────────────────────────
   else if (state.activeTab==='summary') {
     var breakdown='';
     if (state.meals.length>0) {
       breakdown='<div class="breakdown"><div class="card-label">Protein by Meal</div>'
-        +state.meals.map(function(m){
-          return '<div class="brow"><div class="btime">'+m.time+'</div>'
-            +'<div class="btrack"><div class="bfill" style="width:'+Math.min((m.protein/PROTEIN_GOAL)*100,100)+'%;background:'+pc+'"></div></div>'
-            +'<div class="bval" style="color:'+pc+'">'+m.protein+'g</div></div>';
-        }).join('')
-        +'<div class="btotal"><span class="btotal-label">TOTAL</span><span class="btotal-val" style="color:'+pc+'">'+tp+'g / '+PROTEIN_GOAL+'g</span></div>'
-        +'</div>';
+        +state.meals.map(function(m){ return '<div class="brow"><div class="btime">'+m.time+'</div><div class="btrack"><div class="bfill" style="width:'+Math.min((m.protein/PROTEIN_GOAL)*100,100)+'%;background:'+pc+'"></div></div><div class="bval" style="color:'+pc+'">'+m.protein+'g</div></div>'; }).join('')
+        +'<div class="btotal"><span class="btotal-label">TOTAL</span><span class="btotal-val" style="color:'+pc+'">'+tp+'g / '+PROTEIN_GOAL+'g</span></div></div>';
     }
     var fbSection=state.feedback?'<div class="feedback-card"><div class="feedback-label">Day Feedback</div><div class="feedback-text">'+state.feedback+'</div></div>':'';
+    // Side effects section
+    var seSection='<div class="card" style="margin-bottom:14px;">'
+      +'<div class="se-row"><span class="se-label">Side Effects</span>'
+      +'<div class="toggle-row">'
+      +'<span class="toggle-opt'+(state.sideEffects?'':' active-no')+'" onclick="setSE(false)">No</span>'
+      +'<span class="toggle-opt'+(state.sideEffects?' active-yes':'')+'" onclick="setSE(true)">Yes</span>'
+      +'</div></div>'
+      +(state.sideEffects?'<textarea class="se-text" rows="2" placeholder="Describe side effects (nausea, fatigue, etc.)" onchange="setSENote(this.value)">'+state.sideEffectsNote+'</textarea>':'')
+      +'</div>';
     tabContent='<div style="margin-top:18px">'
       +'<div class="stats-grid">'
       +'<div class="stat-card"><div class="stat-val" style="color:'+pc+'">'+tp+'g</div><div class="stat-label">PROTEIN / '+PROTEIN_GOAL+'g</div></div>'
@@ -542,8 +807,9 @@ function render() {
       +'<div class="stat-card"><div class="stat-val" style="color:#7c4dff">'+state.meals.length+'</div><div class="stat-label">MEALS LOGGED</div></div>'
       +'</div>'
       +breakdown
+      +seSection
       +'<div style="margin-bottom:14px"><label class="notes-label">Day Notes</label>'
-      +'<textarea rows="3" placeholder="Side effects? Energy? Speed eating? Nausea?" style="width:100%;background:#fff;border:1.5px solid #e2d9f3;border-radius:8px;padding:10px 12px;color:#2d1f5e;font-size:14px;font-family:DM Sans,sans-serif;resize:none;outline:none;box-sizing:border-box;line-height:1.5" onchange="updateNote(this.value)">'+state.dayNote+'</textarea></div>'
+      +'<textarea rows="3" placeholder="Energy? Appetite? Mood? Speed eating?" style="width:100%;background:#fff;border:1.5px solid #e2d9f3;border-radius:8px;padding:10px 12px;color:#2d1f5e;font-size:14px;font-family:DM Sans,sans-serif;resize:none;outline:none;box-sizing:border-box;line-height:1.5" onchange="updateNote(this.value)">'+state.dayNote+'</textarea></div>'
       +'<button class="feedback-btn" onclick="generateFeedback()" '+(state.feedbackLoading||state.meals.length===0?'disabled':'')+'>'+( state.feedbackLoading?'Analyzing...':state.meals.length===0?'Log meals first':'Get Day Feedback')+'</button>'
       +fbSection
       +(state.meals.length>0?'<button class="share-btn" onclick="shareToClaude()">Share Day to Claude for Feedback</button>':'')
@@ -551,10 +817,110 @@ function render() {
       +'</div>';
   }
 
+  // ── DOSE TAB ─────────────────────────────────────────────────────────────
+  else if (state.activeTab==='dose') {
+    var currentDose = DOSE_SEQUENCE[state.currentDoseIndex];
+    var nextDose = state.currentDoseIndex < DOSE_SEQUENCE.length-1 ? DOSE_SEQUENCE[state.currentDoseIndex+1] : null;
+    var weeks = weeksSinceStart()+1;
+    // dose progress dots
+    var dotsHtml = '';
+    DOSE_SEQUENCE.forEach(function(dose, i) {
+      if (i > 0) dotsHtml += '<div class="dose-connector'+(i<=state.currentDoseIndex?' done':'')+'" style="margin-top:11px"></div>';
+      var cls = i < state.currentDoseIndex ? 'done' : i === state.currentDoseIndex ? 'current' : '';
+      dotsHtml += '<div class="dose-step"><div class="dose-dot '+cls+'">'+(i<state.currentDoseIndex?'✓':dose)+'</div><div class="dose-step-label">'+dose+'mg</div></div>';
+    });
+    var doseLogHtml='';
+    if (state.doseLog.length>0) {
+      doseLogHtml='<div class="dose-log-section"><div class="card-label" style="margin-bottom:8px">Injection Log</div>'
+        +state.doseLog.slice(0,10).map(function(d){
+          var dt=new Date(d.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+          return '<div class="dose-log-item"><span class="dlog-date">'+dt+'</span><div style="text-align:right"><div class="dlog-dose">'+d.dose_mg+'mg</div><div class="dlog-week">Week '+d.week+'</div></div></div>';
+        }).join('')+'</div>';
+    }
+    tabContent='<div style="margin-top:18px">'
+      +'<div class="dose-card">'
+      +'<div class="dose-current">'
+      +'<div class="dose-big">'+currentDose+'<span class="dose-unit">mg</span></div>'
+      +'<div class="dose-week">WEEK '+weeks+(isDoseDay?' · 💉 DOSE DAY TODAY':'')+'</div>'
+      +(nextDose?'<div class="dose-next">Next advance → '+nextDose+'mg</div>':'<div class="dose-next" style="color:#43a047">Maximum dose reached</div>')
+      +'</div>'
+      +'<div class="dose-progress" style="display:flex;align-items:flex-start;gap:0;margin:16px 0 12px;">'+dotsHtml+'</div>'
+      +'<div class="dose-actions">'
+      +'<button class="dose-advance" onclick="advanceDose()" '+(state.currentDoseIndex>=DOSE_SEQUENCE.length-1?'disabled':'')+'>Advance to '+(nextDose||'—')+'mg</button>'
+      +'<button class="dose-revert" onclick="revertDose()" '+(state.currentDoseIndex<=0?'disabled':'')+'>↩ Revert</button>'
+      +'</div>'
+      +(isDoseDay?'<button class="dose-log-btn" onclick="logDoseToday()" style="margin-top:10px">Log Today\'s Injection</button>':'')
+      +'</div>'
+      +(doseLogHtml?'<div class="dose-card">'+doseLogHtml+'</div>':'')
+      +'</div>';
+  }
+
+  // ── WEIGHT TAB ────────────────────────────────────────────────────────────
+  else if (state.activeTab==='weight') {
+    var latestWeight = state.weights.length>0 ? state.weights[state.weights.length-1].weight_lbs : STARTING_WEIGHT;
+    var totalLost = STARTING_WEIGHT - latestWeight;
+    var goalsHtml = WEIGHT_GOALS.map(function(g) {
+      var reached = latestWeight <= g.val;
+      var remain = latestWeight - g.val;
+      return '<div class="wgoal'+(reached?' reached':'')+'">'
+        +'<div class="wgoal-val" style="color:'+(reached?'var(--green)':'var(--text)')+'">'+g.val+'</div>'
+        +'<div class="wgoal-label">'+g.label+(reached?' ✓':'')+'</div>'
+        +'<div class="wgoal-remain">'+(reached?g.celebrate:'-'+remain.toFixed(0)+'lbs')+'</div>'
+        +'</div>';
+    }).join('');
+    var chartHtml = buildWeightChart(state.weights, state.weightChartRange);
+    var histHtml='';
+    if (state.weights.length>0) {
+      var reversed = state.weights.slice().reverse();
+      histHtml='<div class="weight-history-list">'
+        +reversed.slice(0,20).map(function(w,i){
+          var prev = reversed[i+1];
+          var delta = prev ? (w.weight_lbs - prev.weight_lbs) : (w.weight_lbs - STARTING_WEIGHT);
+          var dt = new Date(w.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+          var isToday = w.date === todayISO();
+          return '<div class="weight-entry">'
+            +'<span class="we-date">'+(isToday?'<b>Today</b>':dt)+'</span>'
+            +'<div style="display:flex;align-items:center;gap:10px">'
+            +'<span class="we-delta" style="color:'+(delta<0?'var(--green)':delta>0?'var(--red)':'var(--text3)')+'">'+(delta<0?delta.toFixed(1):delta>0?'+'+delta.toFixed(1):'—')+'</span>'
+            +'<span class="we-val" style="color:'+(w.weight_lbs<=latestWeight?'var(--purple)':'var(--text)')+'">'+w.weight_lbs+'</span>'
+            +'<button class="we-del" onclick="deleteWeight(\''+w.date+'\')">✕</button>'
+            +'</div></div>';
+        }).join('')
+        +'</div>';
+    }
+    tabContent='<div style="margin-top:18px">'
+      +'<div class="weight-hero">'
+      +'<div class="weight-current">'+latestWeight+'<span class="weight-unit"> lbs</span></div>'
+      +(totalLost>0?'<div class="weight-lost">↓ '+totalLost.toFixed(1)+' lbs lost since start</div>':'<div class="weight-lost" style="color:var(--text3)">Starting: '+STARTING_WEIGHT+' lbs</div>')
+      +'</div>'
+      +'<div class="weight-goals">'+goalsHtml+'</div>'
+      +'<div class="chart-wrap">'
+      +'<div class="chart-header"><span class="card-label" style="margin-bottom:0">Weight Trend</span>'
+      +'<div class="chart-filters">'
+      +'<span class="chart-filter'+(state.weightChartRange==='4w'?' active':'')+'" onclick="setChartRange(\'4w\')">4W</span>'
+      +'<span class="chart-filter'+(state.weightChartRange==='8w'?' active':'')+'" onclick="setChartRange(\'8w\')">8W</span>'
+      +'<span class="chart-filter'+(state.weightChartRange==='all'?' active':'')+'" onclick="setChartRange(\'all\')">ALL</span>'
+      +'</div></div>'
+      +'<div class="chart-area">'+chartHtml+'</div>'
+      +'</div>'
+      +'<div class="card">'
+      +'<div class="card-label">Log Weight</div>'
+      +'<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap;">'
+      +'<input class="weight-input" type="number" step="0.1" min="100" max="500" id="weight-input" value="'+(state.weightInput||'')+'" placeholder="lbs" oninput="setWeightInput(this.value)">'
+      +'<input class="weight-date-input" type="date" id="weight-date" value="'+state.weightDateInput+'" onchange="setWeightDate(this.value)">'
+      +'<button class="weight-log-btn" onclick="logWeight()">LOG</button>'
+      +'</div>'
+      +'<div class="input-hint">Log anytime — doctor visit, weekly check-in, whenever</div>'
+      +'</div>'
+      +histHtml
+      +'</div>';
+  }
+
+  // ── HISTORY TAB ───────────────────────────────────────────────────────────
   else if (state.activeTab==='history') {
     var histItems='';
     if (state.history.length===0) {
-      histItems='<div class="empty"><div class="empty-icon">&#x1F4CB;</div><div class="empty-text">No history yet.</div><div class="empty-sub">Days save automatically as you log</div></div>';
+      histItems='<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No history yet.</div><div class="empty-sub">Days save automatically as you log</div></div>';
     } else {
       state.history.forEach(function(day) {
         var isToday=day.date===todayISO();
@@ -562,14 +928,14 @@ function render() {
         var dpc=pColor(pp), dwc=wColor(Math.min(((day.water_oz||0)/WATER_GOAL)*100,100));
         var dateLabel=isToday?'Today':new Date(day.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
         histItems+='<div class="history-day'+(isToday?' today':'')+'">'
-          +'<div class="hday-header">'
-          +'<div><span class="hday-date'+(isToday?' today':'')+'">'+dateLabel+'</span>'+(isToday?'<span class="today-chip">ACTIVE</span>':'')+'</div>'
+          +'<div class="hday-header"><div><span class="hday-date'+(isToday?' today':'')+'">'+dateLabel+'</span>'+(isToday?'<span class="today-chip">ACTIVE</span>':'')+'</div>'
           +'<div class="hstats">'
           +'<div class="hstat"><div class="hstat-val" style="color:'+dpc+'">'+(day.total_protein||0)+'g</div><div class="hstat-label">PROTEIN</div></div>'
           +'<div class="hstat"><div class="hstat-val" style="color:#6b5b9a">'+(day.total_calories||0)+'</div><div class="hstat-label">CAL</div></div>'
           +'<div class="hstat"><div class="hstat-val" style="color:'+dwc+'">'+(day.water_oz||0)+'oz</div><div class="hstat-label">WATER</div></div>'
           +'</div></div>'
           +'<div class="hbar"><div class="hbar-fill" style="width:'+pp+'%;background:'+dpc+'"></div></div>'
+          +(day.side_effects && day.side_effects_note?'<div class="hday-se">⚠ '+day.side_effects_note+'</div>':'')
           +(day.day_note?'<div class="hday-note">"'+day.day_note+'"</div>':'')
           +'</div>';
       });
@@ -577,37 +943,34 @@ function render() {
     tabContent='<div style="margin-top:18px"><div class="card-label">Past 30 Days</div>'+histItems+'</div>';
   }
 
+  var badgeText = buildBadgeText();
   app.innerHTML=errEl
     +'<div class="header"><div class="header-inner">'
     +'<div class="header-top"><div>'
-    +'<div class="badge">ZEPBOUND - WEEK 1 - 2.5mg</div>'
+    +'<div class="badge'+(isDoseDay?' dose-day':'')+'">'+badgeText+'</div>'
     +'<div class="header-title">Daily Tracker</div>'
     +'<div class="header-sub"><span class="header-date">'+today+'</span>'+syncEl+'</div>'
     +'</div>'
     +'<div class="protein-display"><div class="protein-big" style="color:'+pc+'">'+tp+'g</div><div class="protein-label">PROTEIN</div></div>'
     +'</div>'
     +'<div class="progress-bars">'
-    +'<div><div class="progress-labels"><span class="pleft">Protein '+tp+'/'+PROTEIN_GOAL+'g</span><span class="pright" style="color:'+pc+'">'+(protRem>0?protRem+'g to go':'Goal reached')+'</span></div><div class="progress-track"><div class="progress-fill" style="width:'+protPct+'%;background:linear-gradient(90deg,'+pc+'88,'+pc+')"></div></div></div>'
-    +'<div><div class="progress-labels"><span class="pleft">Water '+state.waterOz+'/'+WATER_GOAL+'oz</span><span class="pright" style="color:'+wc+'">'+(watRem>0?watRem+'oz to go':'Goal reached')+'</span></div><div class="progress-track"><div class="progress-fill" style="width:'+watPct+'%;background:linear-gradient(90deg,'+wc+'88,'+wc+')"></div></div></div>'
+    +'<div><div class="progress-labels"><span class="pleft">Protein '+tp+'/'+PROTEIN_GOAL+'g</span><span class="pright" style="color:'+pc+'">'+(protRem>0?protRem+'g to go':'Goal reached ✓')+'</span></div><div class="progress-track"><div class="progress-fill" style="width:'+protPct+'%;background:linear-gradient(90deg,'+pc+'88,'+pc+')"></div></div></div>'
+    +'<div><div class="progress-labels"><span class="pleft">Water '+state.waterOz+'/'+WATER_GOAL+'oz</span><span class="pright" style="color:'+wc+'">'+(watRem>0?watRem+'oz to go':'Goal reached ✓')+'</span></div><div class="progress-track"><div class="progress-fill" style="width:'+watPct+'%;background:linear-gradient(90deg,'+wc+'88,'+wc+')"></div></div></div>'
     +'</div></div></div>'
     +'<div class="tabs">'
-    +['log','water','summary','history'].map(function(t){return '<button class="tab'+(state.activeTab===t?' active':'')+'" onclick="setTab(\''+t+'\')">'+t+'</button>';}).join('')
+    +['log','water','summary','dose','weight','history'].map(function(t){return '<button class="tab'+(state.activeTab===t?' active':'')+'" onclick="setTab(\''+t+'\')">'+t+'</button>';}).join('')
     +'</div>'
     +'<div class="main">'+tabContent+'</div>';
 
   var ta=document.getElementById('meal-input');
   if (ta) {
     ta.value=state.input;
-    ta.addEventListener('input',function(e){
-      state.input=e.target.value;
-      var btn=document.getElementById('log-btn');
-      if(btn) btn.disabled=!e.target.value.trim();
-    });
-    var btn=document.getElementById('log-btn');
-    if(btn) btn.disabled=!state.input.trim();
+    ta.addEventListener('input',function(e){ state.input=e.target.value; var btn=document.getElementById('log-btn'); if(btn) btn.disabled=!e.target.value.trim(); });
+    var btn=document.getElementById('log-btn'); if(btn) btn.disabled=!state.input.trim();
   }
 }
 
+// ─── GLOBALS ─────────────────────────────────────────────────────────────────
 window.handleKey=function(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();logMeal();} };
 window.setTab=function(t){ setState({activeTab:t}); };
 window.delMeal=deleteMeal;
@@ -615,17 +978,29 @@ window.updMeal=updateMealVal;
 window.addWater=addWater;
 window.resetWater=function(){ state.waterOz=0; scheduleSave(); render(); };
 window.updateNote=function(v){ state.dayNote=v; scheduleSave(); };
+window.setSE=function(v){ state.sideEffects=v; if(!v) state.sideEffectsNote=''; scheduleSave(); render(); };
+window.setSENote=function(v){ state.sideEffectsNote=v; scheduleSave(); };
 window.generateFeedback=generateFeedback;
 window.clearErr=function(){ setState({dbError:null}); };
 window.shareToClaude=shareToClaude;
 window.logMeal=logMeal;
+window.toggleMergeMode=toggleMergeMode;
+window.toggleMergeSelect=toggleMergeSelect;
+window.confirmMerge=confirmMerge;
+window.advanceDose=advanceDose;
+window.revertDose=revertDose;
+window.logDoseToday=logDoseToday;
+window.logWeight=logWeight;
+window.deleteWeight=deleteWeight;
+window.setWeightInput=function(v){ state.weightInput=v; };
+window.setWeightDate=function(v){ state.weightDateInput=v; };
+window.setChartRange=function(r){ state.weightChartRange=r; render(); };
 window.resetDay=function(){
   if(confirm('Reset today\'s log? This cannot be undone.')){
-    state.meals=[]; state.waterOz=0; state.feedback=null; state.dayNote='';
+    state.meals=[]; state.waterOz=0; state.feedback=null; state.dayNote=''; state.sideEffects=false; state.sideEffectsNote='';
     scheduleSave(); render();
   }
 };
-
 window.onerror=function(msg,src,line,col,err){
   document.getElementById('app').innerHTML='<div style="padding:20px;font-family:monospace;color:#c00;background:#fff0f0;margin:20px;border-radius:8px;border:1px solid #fcc"><b>Error</b><br>'+msg+'<br>Line: '+line+'</div>';
 };
