@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Zepbound Tracker v1.5.2</title>
+<title>Zepbound Tracker v1.6</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root {
@@ -614,7 +614,7 @@ var state = {
   meals:[], waterOz:0, dayNote:'', sideEffects:false, sideEffectsNote:'',
   activeTab:'log', history:[], loading:true, saveStatus:null, dbError:null,
   feedback:null, feedbackLoading:false, input:'', saveTimer:null, ready:false,
-  mergeMode:false, mergeSelected:[],
+  mergeMode:false, mergeSelected:[], copyStatus:null,
   // dose
   currentDoseIndex:0, doseLog:[],
   // weight
@@ -765,21 +765,48 @@ function generateFeedback() {
     setState({ feedback:fb, feedbackLoading:false });
   }, 400);
 }
-function shareToClaude() {
+function buildShareMsg() {
   var tp=state.meals.reduce(function(s,m){return s+m.protein;},0);
   var tc=state.meals.reduce(function(s,m){return s+m.calories;},0);
   var date=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   var mealLines=state.meals.map(function(m,i){ return '  Meal '+(i+1)+' ('+m.time+'): '+m.description+' - '+m.protein+'g protein, '+m.calories+' cal'; }).join('\n');
   var latestWeight = state.weights.length > 0 ? state.weights[state.weights.length-1].weight_lbs : null;
-  var msg='Here is my Zepbound daily summary for '+date+':\n\n'
+  return 'Here is my Zepbound daily summary for '+date+':\n\n'
     +'CURRENT DOSE: '+DOSE_SEQUENCE[state.currentDoseIndex]+'mg (Week '+weeksSinceStart()+')\n'
-    +(latestWeight?'CURRENT WEIGHT: '+latestWeight+'lbs (started at '+STARTING_WEIGHT+'lbs, lost '+(STARTING_WEIGHT-latestWeight).toFixed(1)+'lbs)\n\n':'')
+    +(latestWeight?'CURRENT WEIGHT: '+latestWeight+' lbs (started at '+STARTING_WEIGHT+' lbs, lost '+(STARTING_WEIGHT-latestWeight).toFixed(1)+' lbs)\n\n':'')
     +'MEALS LOGGED ('+state.meals.length+'):\n'+(mealLines||'  No meals logged')+'\n\n'
     +'TOTALS:\n  Protein: '+tp+'g / 140g goal\n  Calories: '+tc+'\n  Water: '+state.waterOz+'oz / 80oz goal\n'
     +(state.sideEffects?'\nSIDE EFFECTS: '+state.sideEffectsNote+'\n':'')
     +(state.dayNote?'\nDAY NOTES: '+state.dayNote+'\n':'')
     +'\nPlease give me feedback on today, protein targets, and what to focus on tomorrow.';
-  window.open('https://claude.ai/new?q='+encodeURIComponent(msg), '_blank');
+}
+function shareToClaude() {
+  var msg = buildShareMsg();
+  // Try claude:// deep link first (opens mobile app), fall back to web
+  window.location.href = 'claude://?q=' + encodeURIComponent(msg);
+  // Fall back to web after short delay if app didn't open
+  setTimeout(function() {
+    window.open('https://claude.ai/new?q='+encodeURIComponent(msg), '_blank');
+  }, 1000);
+}
+function copyToClipboard() {
+  var msg = buildShareMsg();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(msg).then(function() {
+      setState({ copyStatus: 'copied' });
+      setTimeout(function(){ setState({ copyStatus: null }); }, 2000);
+    }).catch(function() { fallbackCopy(msg); });
+  } else {
+    fallbackCopy(msg);
+  }
+}
+function fallbackCopy(msg) {
+  var ta = document.createElement('textarea');
+  ta.value = msg; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); setState({ copyStatus: 'copied' }); setTimeout(function(){ setState({ copyStatus: null }); }, 2000); }
+  catch(e) { setState({ copyStatus: 'error' }); }
+  document.body.removeChild(ta);
 }
 
 // ─── CHART RENDERING ─────────────────────────────────────────────────────────
@@ -1048,7 +1075,10 @@ function render() {
       +'<textarea rows="3" placeholder="Energy? Appetite? Mood? Speed eating?" style="width:100%;background:#fff;border:1.5px solid #e2d9f3;border-radius:8px;padding:10px 12px;color:#2d1f5e;font-size:14px;font-family:DM Sans,sans-serif;resize:none;outline:none;box-sizing:border-box;line-height:1.5" onchange="updateNote(this.value)">'+state.dayNote+'</textarea></div>'
       +'<button class="feedback-btn" onclick="generateFeedback()" '+(state.feedbackLoading||state.meals.length===0?'disabled':'')+'>'+( state.feedbackLoading?'Analyzing...':state.meals.length===0?'Log meals first':'Get Day Feedback')+'</button>'
       +fbSection
-      +(state.meals.length>0?'<button class="share-btn" onclick="shareToClaude()">Share Day to Claude for Feedback</button>':'')
+      +(state.meals.length>0 ? '<div style="display:flex;gap:8px;margin-top:10px;">'
+        +'<button class="share-btn" style="margin-top:0;flex:1" onclick="shareToClaude()">Open in Claude App</button>'
+        +'<button class="share-btn" style="margin-top:0;flex:0 0 auto;background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#90caf9;color:#1565c0;" onclick="copyToClipboard()">'+(state.copyStatus==="copied"?"\u2713 Copied":"Copy Summary")+'</button>'
+        +'</div>' : '')
       +(state.meals.length>0?'<button class="danger-btn" onclick="resetDay()">RESET DAY</button>':'')
       +'</div>';
   }
@@ -1126,7 +1156,7 @@ function render() {
     }
     tabContent='<div style="margin-top:18px">'
       +'<div class="weight-hero">'
-      +'<div class="weight-current">'+latestWeight+'<span class="weight-unit"> lbs</span></div>'
+      +'<div class="weight-current">'+latestWeight+'<span class="weight-unit">&nbsp;lbs</span></div>'
       +(totalLost>0?'<div class="weight-lost">↓ '+totalLost.toFixed(1)+' lbs lost since start</div>':'<div class="weight-lost" style="color:var(--text3)">Starting: '+STARTING_WEIGHT+' lbs</div>')
       +'</div>'
       +'<div class="weight-goals">'+goalsHtml+'</div>'
@@ -1227,7 +1257,7 @@ function render() {
     +'<div class="header"><div class="header-inner">'
     +'<div class="header-top"><div>'
     +'<div class="badge'+(isDoseDay?' dose-day':'')+'">'+badgeText+'</div>'
-    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.5.2</span></div>'
+    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.6</span></div>'
     +'<div class="header-sub"><span class="header-date">'+today+'</span>'+syncEl+'</div>'
     +'</div>'
     +'<div class="protein-display"><div class="protein-big" style="color:'+pc+'">'+tp+'g</div><div class="protein-label">PROTEIN</div></div>'
@@ -1262,6 +1292,7 @@ window.setSENote=function(v){ state.sideEffectsNote=v; scheduleSave(); };
 window.generateFeedback=generateFeedback;
 window.clearErr=function(){ setState({dbError:null}); };
 window.shareToClaude=shareToClaude;
+window.copyToClipboard=copyToClipboard;
 window.logMeal=logMeal;
 window.toggleMergeMode=toggleMergeMode;
 window.toggleMergeSelect=toggleMergeSelect;
