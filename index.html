@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Zepbound Tracker v1.6</title>
+<title>Zepbound Tracker v1.6.1</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root {
@@ -380,7 +380,7 @@ var FOODS = [
   { keys: ['gold standard','on whey','whey protein powder'], p:24, c:120, label:'Whey protein (1 scoop)', group:'protein_powder' },
   { keys: ['protein powder','scoop of protein','scoop protein'], p:20, c:130, label:'Protein powder (1 scoop)', group:'protein_powder' },
   { keys: ['fairlife shake','core power','fairlife protein shake'], p:42, c:230, label:'Fairlife protein shake', group:'fairlife' },
-  { keys: ['fairlife milk'], p:13, c:80, label:'Fairlife milk', group:'fairlife' },
+  { keys: ['fairlife milk'], p:13, c:80, label:'Fairlife milk', group:'fairlife', blocks:['milk'] },
   { keys: ['fairlife'], p:13, c:80, label:'Fairlife', group:'fairlife' },
   { keys: ['premier protein'], p:30, c:160, label:'Premier Protein shake', group:'pshake' },
   { keys: ['boost','atkins shake','owyn','quest shake','slate shake','p2x'], p:20, c:160, label:'Protein shake', group:'pshake' },
@@ -421,7 +421,7 @@ var FOODS = [
   { keys: ['cashews','cashew'], p:5, c:157, label:'Cashews (1oz)', group:'nuts' },
   { keys: ['almonds','almond'], p:6, c:164, label:'Almonds (1oz)', group:'nuts' },
   { keys: ['peanut butter'], p:7, c:190, label:'Peanut butter', group:'nuts' },
-  { keys: ['cottage cheese'], p:14, c:110, label:'Cottage cheese (1/2 cup)', group:'cottage' },
+  { keys: ['cottage cheese'], p:14, c:110, label:'Cottage cheese (1/2 cup)', group:'cottage', blocks:['cheese'] },
   { keys: ['string cheese'], p:7, c:80, label:'String cheese', group:'cheese', blocks:['cheese'] },
   { keys: ['cheese curd','cheese curds'], p:7, c:110, label:'Cheese curds', group:'cheese', blocks:['cheese'] },
   { keys: ['cheese'], p:7, c:110, label:'Cheese (1oz)', group:'cheese' , generic:true },
@@ -460,8 +460,8 @@ var FOODS = [
   { keys: ['bell pepper','peppers'], p:1, c:25, label:'Bell peppers', group:'peppers' },
   { keys: ['broccoli','steamed vegetables','mixed vegetables','vegetables','veggies'], p:3, c:50, label:'Vegetables', group:'veg' },
   { keys: ['crackers','cracker'], p:2, c:70, label:'Crackers', group:'crackers' },
-  { keys: ['oat milk'], p:3, c:120, label:'Oat milk', group:'milk' },
-  { keys: ['almond milk'], p:1, c:30, label:'Almond milk', group:'milk' },
+  { keys: ['oat milk'], p:3, c:120, label:'Oat milk', group:'milk', generic:true },
+  { keys: ['almond milk'], p:1, c:30, label:'Almond milk', group:'milk', generic:true },
   { keys: ['milk'], p:8, c:150, label:'Milk', group:'milk' , generic:true },
   { keys: ['coffee','black coffee'], p:0, c:5, label:'Coffee', group:'coffee' , generic:true }
 ];
@@ -1257,7 +1257,7 @@ function render() {
     +'<div class="header"><div class="header-inner">'
     +'<div class="header-top"><div>'
     +'<div class="badge'+(isDoseDay?' dose-day':'')+'">'+badgeText+'</div>'
-    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.6</span></div>'
+    +'<div class="header-title">Daily Tracker <span style="font-size:11px;font-family:DM Mono,monospace;color:var(--text3);font-weight:400;">v1.6.1</span></div>'
     +'<div class="header-sub"><span class="header-date">'+today+'</span>'+syncEl+'</div>'
     +'</div>'
     +'<div class="protein-display"><div class="protein-big" style="color:'+pc+'">'+tp+'g</div><div class="protein-label">PROTEIN</div></div>'
